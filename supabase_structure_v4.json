@@ -1,0 +1,3564 @@
+{
+  "export_date": "2025-10-27T17:16:57.705678+00:00",
+  "database": "postgres",
+  "schema": "public",
+  "table_count": 19,
+  "tables": {
+    "corev4_ai_decisions": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_ai_decisions_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "followup_execution_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "model_used",
+          "type": "character varying",
+          "nullable": false,
+          "default": null,
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 3
+        },
+        {
+          "name": "decision",
+          "type": "character varying",
+          "nullable": false,
+          "default": null,
+          "max_length": 30,
+          "numeric_precision": null,
+          "position": 4
+        },
+        {
+          "name": "confidence_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 5
+        },
+        {
+          "name": "reasoning",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "context_snapshot",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "processing_time_ms",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 8
+        },
+        {
+          "name": "tokens_used",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 9
+        },
+        {
+          "name": "cost_usd",
+          "type": "numeric",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 10,
+          "position": 10
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 11
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_ai_decisions_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_ai_decisions_followup_execution",
+          "column_name": "followup_execution_id",
+          "referenced_table": "corev4_followup_executions",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_ai_decisions_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_ai_decisions_pkey ON public.corev4_ai_decisions USING btree (id)"
+        },
+        {
+          "index_name": "idx_ai_decisions_exec",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_ai_decisions_exec ON public.corev4_ai_decisions USING btree (followup_execution_id)"
+        },
+        {
+          "index_name": "idx_ai_decisions_model",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_ai_decisions_model ON public.corev4_ai_decisions USING btree (model_used)"
+        },
+        {
+          "index_name": "idx_ai_decisions_decision",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_ai_decisions_decision ON public.corev4_ai_decisions USING btree (decision)"
+        },
+        {
+          "index_name": "idx_ai_decisions_created",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_ai_decisions_created ON public.corev4_ai_decisions USING btree (created_at DESC)"
+        }
+      ]
+    },
+    "corev4_anum_history": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_anum_history_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "authority_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "need_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 5
+        },
+        {
+          "name": "urgency_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 6
+        },
+        {
+          "name": "money_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 7
+        },
+        {
+          "name": "total_score",
+          "type": "numeric",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 5,
+          "position": 8
+        },
+        {
+          "name": "is_qualified",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "qualification_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 20,
+          "numeric_precision": null,
+          "position": 10
+        },
+        {
+          "name": "evidence",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 11
+        },
+        {
+          "name": "confidence_score",
+          "type": "numeric",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 3,
+          "position": 12
+        },
+        {
+          "name": "messages_analyzed",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 13
+        },
+        {
+          "name": "analysis_reasoning",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 14
+        },
+        {
+          "name": "authority_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 15
+        },
+        {
+          "name": "need_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 16
+        },
+        {
+          "name": "urgency_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 17
+        },
+        {
+          "name": "money_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 18
+        },
+        {
+          "name": "trigger_source",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'anum_analyzer'::character varying",
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 19
+        },
+        {
+          "name": "analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 20
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 21
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_anum_history_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "corev4_anum_history_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_anum_history_company_id_fkey",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_anum_history_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_anum_history_pkey ON public.corev4_anum_history USING btree (id)"
+        },
+        {
+          "index_name": "idx_anum_history_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_anum_history_contact ON public.corev4_anum_history USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_anum_history_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_anum_history_company ON public.corev4_anum_history USING btree (company_id)"
+        },
+        {
+          "index_name": "idx_anum_history_analyzed_at",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_anum_history_analyzed_at ON public.corev4_anum_history USING btree (analyzed_at DESC)"
+        },
+        {
+          "index_name": "idx_anum_history_qualified",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_anum_history_qualified ON public.corev4_anum_history USING btree (is_qualified)"
+        }
+      ]
+    },
+    "corev4_chat_history": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_chat_history_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "session_id",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 2
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "role",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "message",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "message_type",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "media_url",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "media_mime_type",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "tokens_used",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 10
+        },
+        {
+          "name": "cost_usd",
+          "type": "numeric",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 10,
+          "position": 11
+        },
+        {
+          "name": "model_used",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "message_timestamp",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 13
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 14
+        },
+        {
+          "name": "has_media",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 15
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_chat_history_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_chat_history_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_chat_history_contact",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_chat_history_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_chat_history_pkey ON public.corev4_chat_history USING btree (id)"
+        },
+        {
+          "index_name": "idx_chat_history_session",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chat_history_session ON public.corev4_chat_history USING btree (session_id)"
+        },
+        {
+          "index_name": "idx_chat_history_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chat_history_contact ON public.corev4_chat_history USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_chat_history_contact_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chat_history_contact_company ON public.corev4_chat_history USING btree (contact_id, company_id)"
+        },
+        {
+          "index_name": "idx_chat_history_has_media",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chat_history_has_media ON public.corev4_chat_history USING btree (has_media) WHERE (has_media = true)"
+        }
+      ]
+    },
+    "corev4_chats": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false,
+          "default": "nextval('corev4_chats_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 1
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 3
+        },
+        {
+          "name": "agent_alias",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 4
+        },
+        {
+          "name": "last_message_ts",
+          "type": "bigint",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 5
+        },
+        {
+          "name": "last_lead_message_ts",
+          "type": "bigint",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 6
+        },
+        {
+          "name": "last_agent_message_ts",
+          "type": "bigint",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 7
+        },
+        {
+          "name": "batch_collecting",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "batch_expires_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "conversation_open",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 10
+        },
+        {
+          "name": "closed_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 11
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 13
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_chats_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "corev4_chats_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_chats_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_chats_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_chats_pkey ON public.corev4_chats USING btree (id)"
+        },
+        {
+          "index_name": "unique_contact_chat",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX unique_contact_chat ON public.corev4_chats USING btree (contact_id, company_id)"
+        },
+        {
+          "index_name": "idx_chats_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chats_contact ON public.corev4_chats USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_chats_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chats_company ON public.corev4_chats USING btree (company_id)"
+        },
+        {
+          "index_name": "idx_chats_open",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chats_open ON public.corev4_chats USING btree (conversation_open) WHERE (conversation_open = true)"
+        },
+        {
+          "index_name": "idx_chats_batch",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chats_batch ON public.corev4_chats USING btree (batch_collecting) WHERE (batch_collecting = true)"
+        },
+        {
+          "index_name": "idx_chats_last_message",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chats_last_message ON public.corev4_chats USING btree (last_message_ts DESC NULLS LAST)"
+        },
+        {
+          "index_name": "idx_chats_conversation_open",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_chats_conversation_open ON public.corev4_chats USING btree (conversation_open) WHERE (conversation_open = true)"
+        }
+      ]
+    },
+    "corev4_companies": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_companies_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "nullable": false,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 2
+        },
+        {
+          "name": "slug",
+          "type": "character varying",
+          "nullable": false,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 3
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 4
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "evolution_api_url",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "evolution_instance",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "evolution_api_key",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "enable_anum_analysis",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "anum_threshold_qualified",
+          "type": "integer",
+          "nullable": true,
+          "default": "70",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 10
+        },
+        {
+          "name": "anum_threshold_disqualified",
+          "type": "integer",
+          "nullable": true,
+          "default": "20",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 11
+        },
+        {
+          "name": "enable_followup_campaigns",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "auto_create_campaigns",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 13
+        },
+        {
+          "name": "default_followup_config_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 14
+        },
+        {
+          "name": "contact_type_mode",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'leads_only'::character varying",
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 15
+        },
+        {
+          "name": "enable_audio_responses",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 16
+        },
+        {
+          "name": "enable_media_processing",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 17
+        },
+        {
+          "name": "enable_command_processing",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 18
+        },
+        {
+          "name": "llm_model",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'gpt-4-turbo'::character varying",
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 19
+        },
+        {
+          "name": "llm_temperature",
+          "type": "numeric",
+          "nullable": true,
+          "default": "0.7",
+          "max_length": null,
+          "numeric_precision": 3,
+          "position": 20
+        },
+        {
+          "name": "llm_max_tokens",
+          "type": "integer",
+          "nullable": true,
+          "default": "1000",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 21
+        },
+        {
+          "name": "bot_name",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'Frank'::character varying",
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 22
+        },
+        {
+          "name": "bot_personality",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 23
+        },
+        {
+          "name": "system_prompt",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 24
+        },
+        {
+          "name": "greeting_message",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 25
+        },
+        {
+          "name": "webhook_secret",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 26
+        },
+        {
+          "name": "webhook_validation_enabled",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 27
+        },
+        {
+          "name": "crm_integration",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 28
+        },
+        {
+          "name": "crm_api_key",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 29
+        },
+        {
+          "name": "crm_pipeline_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 30
+        },
+        {
+          "name": "features",
+          "type": "jsonb",
+          "nullable": true,
+          "default": "'{}'::jsonb",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 31
+        },
+        {
+          "name": "plan_tier",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'free'::character varying",
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 32
+        },
+        {
+          "name": "monthly_message_limit",
+          "type": "integer",
+          "nullable": true,
+          "default": "1000",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 33
+        },
+        {
+          "name": "current_month_messages",
+          "type": "integer",
+          "nullable": true,
+          "default": "0",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 34
+        },
+        {
+          "name": "billing_email",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 35
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 36
+        },
+        {
+          "name": "suspended_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 37
+        },
+        {
+          "name": "trial_ends_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 38
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_companies_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "corev4_companies_default_followup_config_id_fkey",
+          "column_name": "default_followup_config_id",
+          "referenced_table": "corev4_followup_configs",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_companies_slug",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_companies_slug ON public.corev4_companies USING btree (slug)"
+        },
+        {
+          "index_name": "idx_companies_is_active",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_companies_is_active ON public.corev4_companies USING btree (is_active)"
+        },
+        {
+          "index_name": "idx_companies_plan_tier",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_companies_plan_tier ON public.corev4_companies USING btree (plan_tier)"
+        },
+        {
+          "index_name": "corev4_companies_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_companies_pkey ON public.corev4_companies USING btree (id)"
+        },
+        {
+          "index_name": "corev4_companies_slug_key",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_companies_slug_key ON public.corev4_companies USING btree (slug)"
+        }
+      ]
+    },
+    "corev4_contact_extras": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false,
+          "default": "nextval('corev4_contact_extras_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 1
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 2
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "pipeline_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 4
+        },
+        {
+          "name": "crm_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "deals_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "thread_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "stripe_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "audio_response",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "text_response",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 10
+        },
+        {
+          "name": "interactions",
+          "type": "integer",
+          "nullable": true,
+          "default": "0",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 11
+        },
+        {
+          "name": "last_interaction_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "plan_tier",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 13
+        },
+        {
+          "name": "evolution_api_contact",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 14
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 15
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 16
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_contact_extras_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_contact_extras_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_contact_extras_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_contact_extras_contact",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_contact_extras_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_contact_extras_pkey ON public.corev4_contact_extras USING btree (id)"
+        },
+        {
+          "index_name": "unique_contact_extras",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX unique_contact_extras ON public.corev4_contact_extras USING btree (contact_id, company_id)"
+        },
+        {
+          "index_name": "idx_extras_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_extras_contact ON public.corev4_contact_extras USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_extras_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_extras_company ON public.corev4_contact_extras USING btree (company_id)"
+        },
+        {
+          "index_name": "idx_extras_crm",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_extras_crm ON public.corev4_contact_extras USING btree (crm_id) WHERE (crm_id IS NOT NULL)"
+        },
+        {
+          "index_name": "idx_extras_stripe",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_extras_stripe ON public.corev4_contact_extras USING btree (stripe_id) WHERE (stripe_id IS NOT NULL)"
+        },
+        {
+          "index_name": "idx_extras_last_interaction",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_extras_last_interaction ON public.corev4_contact_extras USING btree (last_interaction_at DESC NULLS LAST)"
+        },
+        {
+          "index_name": "idx_contact_extras_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contact_extras_contact ON public.corev4_contact_extras USING btree (contact_id, company_id)"
+        }
+      ]
+    },
+    "corev4_contacts": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false,
+          "default": "nextval('corev4_contacts_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 1
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "full_name",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 3
+        },
+        {
+          "name": "whatsapp",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 4
+        },
+        {
+          "name": "phone_number",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "origin_source",
+          "type": "text",
+          "nullable": false,
+          "default": "'whatsapp'::text",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "utm_source",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "utm_medium",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "utm_campaign",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 10
+        },
+        {
+          "name": "utm_adgroup",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 11
+        },
+        {
+          "name": "utm_creative",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "sector",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 13
+        },
+        {
+          "name": "tags",
+          "type": "ARRAY",
+          "nullable": true,
+          "default": "'{}'::text[]",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 14
+        },
+        {
+          "name": "opt_out",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 15
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 16
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 17
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 18
+        },
+        {
+          "name": "last_interaction_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 19
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_contacts_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_contacts_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_contacts_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_contacts_pkey ON public.corev4_contacts USING btree (id)"
+        },
+        {
+          "index_name": "unique_whatsapp_company",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX unique_whatsapp_company ON public.corev4_contacts USING btree (whatsapp, company_id)"
+        },
+        {
+          "index_name": "idx_contacts_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_company ON public.corev4_contacts USING btree (company_id)"
+        },
+        {
+          "index_name": "idx_contacts_whatsapp",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_whatsapp ON public.corev4_contacts USING btree (whatsapp)"
+        },
+        {
+          "index_name": "idx_contacts_email",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_email ON public.corev4_contacts USING btree (email) WHERE (email IS NOT NULL)"
+        },
+        {
+          "index_name": "idx_contacts_active",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_active ON public.corev4_contacts USING btree (is_active) WHERE (is_active = true)"
+        },
+        {
+          "index_name": "idx_contacts_opt_out",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_opt_out ON public.corev4_contacts USING btree (opt_out) WHERE (opt_out = false)"
+        },
+        {
+          "index_name": "idx_contacts_last_interaction",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_last_interaction ON public.corev4_contacts USING btree (last_interaction_at DESC NULLS LAST)"
+        },
+        {
+          "index_name": "idx_contacts_full_name_trgm",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_full_name_trgm ON public.corev4_contacts USING gin (full_name gin_trgm_ops)"
+        },
+        {
+          "index_name": "idx_contacts_created",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_contacts_created ON public.corev4_contacts USING btree (created_at DESC)"
+        }
+      ]
+    },
+    "corev4_execution_logs": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_execution_logs_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "workflow_name",
+          "type": "character varying",
+          "nullable": false,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 2
+        },
+        {
+          "name": "execution_id",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 3
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "followup_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 5
+        },
+        {
+          "name": "action_taken",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "success",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "error_message",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "details",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "duration_ms",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 10
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 11
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_execution_logs_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "corev4_execution_logs_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_execution_logs_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_execution_logs_pkey ON public.corev4_execution_logs USING btree (id)"
+        },
+        {
+          "index_name": "idx_execution_logs_workflow",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_execution_logs_workflow ON public.corev4_execution_logs USING btree (workflow_name)"
+        },
+        {
+          "index_name": "idx_execution_logs_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_execution_logs_contact ON public.corev4_execution_logs USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_execution_logs_followup",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_execution_logs_followup ON public.corev4_execution_logs USING btree (followup_id)"
+        },
+        {
+          "index_name": "idx_execution_logs_success",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_execution_logs_success ON public.corev4_execution_logs USING btree (success)"
+        },
+        {
+          "index_name": "idx_execution_logs_created",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_execution_logs_created ON public.corev4_execution_logs USING btree (created_at DESC)"
+        }
+      ]
+    },
+    "corev4_followup_campaigns": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_campaigns_id_seq1'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 2
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "config_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'active'::character varying",
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "pause_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "steps_completed",
+          "type": "integer",
+          "nullable": true,
+          "default": "0",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 7
+        },
+        {
+          "name": "total_steps",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 8
+        },
+        {
+          "name": "last_step_sent_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "should_continue",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 10
+        },
+        {
+          "name": "stopped_reason",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 11
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 13
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_followup_campaigns_pkey1",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "corev4_followup_campaigns_config_id_fkey",
+          "column_name": "config_id",
+          "referenced_table": "corev4_followup_configs",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_followup_campaigns_contact",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_followup_campaigns_config",
+          "column_name": "config_id",
+          "referenced_table": "corev4_followup_configs",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_followup_campaigns_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_campaigns_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_campaigns_company_id_fkey1",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_followup_campaigns_pkey1",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_campaigns_pkey1 ON public.corev4_followup_campaigns USING btree (id)"
+        },
+        {
+          "index_name": "idx_campaigns_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_campaigns_contact ON public.corev4_followup_campaigns USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_campaigns_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_campaigns_company ON public.corev4_followup_campaigns USING btree (company_id)"
+        },
+        {
+          "index_name": "idx_campaigns_config",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_campaigns_config ON public.corev4_followup_campaigns USING btree (config_id)"
+        },
+        {
+          "index_name": "idx_campaigns_status",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_campaigns_status ON public.corev4_followup_campaigns USING btree (status)"
+        },
+        {
+          "index_name": "idx_campaigns_active",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_campaigns_active ON public.corev4_followup_campaigns USING btree (should_continue) WHERE (should_continue = true)"
+        },
+        {
+          "index_name": "idx_followup_campaigns_status",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_campaigns_status ON public.corev4_followup_campaigns USING btree (status, company_id, should_continue)"
+        },
+        {
+          "index_name": "idx_followup_campaigns_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_campaigns_contact ON public.corev4_followup_campaigns USING btree (contact_id, company_id)"
+        }
+      ]
+    },
+    "corev4_followup_configs": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_configs_id_seq1'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "config_name",
+          "type": "character varying",
+          "nullable": false,
+          "default": null,
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 3
+        },
+        {
+          "name": "total_steps",
+          "type": "integer",
+          "nullable": false,
+          "default": "5",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "qualification_threshold",
+          "type": "integer",
+          "nullable": true,
+          "default": "60",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 6
+        },
+        {
+          "name": "disqualification_threshold",
+          "type": "integer",
+          "nullable": true,
+          "default": "15",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 7
+        },
+        {
+          "name": "max_no_response_days",
+          "type": "integer",
+          "nullable": true,
+          "default": "30",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 8
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 15
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 16
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 17
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_followup_configs_pkey1",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_followup_configs_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_configs_company_id_fkey",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_followup_configs_pkey1",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_configs_pkey1 ON public.corev4_followup_configs USING btree (id)"
+        },
+        {
+          "index_name": "idx_followup_configs_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_configs_company ON public.corev4_followup_configs USING btree (company_id)"
+        },
+        {
+          "index_name": "idx_followup_configs_active",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_configs_active ON public.corev4_followup_configs USING btree (is_active) WHERE (is_active = true)"
+        },
+        {
+          "index_name": "corev4_followup_configs_company_name_key",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_configs_company_name_key ON public.corev4_followup_configs USING btree (company_id, config_name)"
+        }
+      ]
+    },
+    "corev4_followup_configs_with_steps": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "total_steps",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 4
+        },
+        {
+          "name": "timing_pattern",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        }
+      ],
+      "primary_keys": [],
+      "foreign_keys": [],
+      "indexes": []
+    },
+    "corev4_followup_executions": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_executions_id_seq1'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "campaign_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 3
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "step",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 5
+        },
+        {
+          "name": "total_steps",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 6
+        },
+        {
+          "name": "scheduled_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "executed",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "generated_message",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 10
+        },
+        {
+          "name": "generation_context",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 11
+        },
+        {
+          "name": "should_send",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 13
+        },
+        {
+          "name": "anum_at_execution",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 14
+        },
+        {
+          "name": "evolution_message_id",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 15
+        },
+        {
+          "name": "evolution_api_url",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 16
+        },
+        {
+          "name": "evolution_instance",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 17
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 18
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 19
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_followup_executions_pkey1",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_followup_executions_campaign",
+          "column_name": "campaign_id",
+          "referenced_table": "corev4_followup_campaigns",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_executions_campaign_id_fkey1",
+          "column_name": "campaign_id",
+          "referenced_table": "corev4_followup_campaigns",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_executions_company_id_fkey",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_executions_contact_id_fkey1",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_followup_executions_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_followup_executions_contact",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_followup_executions_pkey1",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_executions_pkey1 ON public.corev4_followup_executions USING btree (id)"
+        },
+        {
+          "index_name": "idx_executions_campaign",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_executions_campaign ON public.corev4_followup_executions USING btree (campaign_id)"
+        },
+        {
+          "index_name": "idx_executions_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_executions_contact ON public.corev4_followup_executions USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_executions_pending",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_executions_pending ON public.corev4_followup_executions USING btree (executed, scheduled_at, should_send) WHERE ((executed = false) AND (should_send = true))"
+        },
+        {
+          "index_name": "idx_executions_scheduled",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_executions_scheduled ON public.corev4_followup_executions USING btree (scheduled_at)"
+        },
+        {
+          "index_name": "idx_followup_executions_pending",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_executions_pending ON public.corev4_followup_executions USING btree (scheduled_at, executed, company_id) WHERE (executed = false)"
+        }
+      ]
+    },
+    "corev4_followup_sequences": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_sequences_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "campaign_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "step_number",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "interval_hours",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "message_template",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "min_anum_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 6
+        },
+        {
+          "name": "max_anum_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 7
+        },
+        {
+          "name": "required_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 20,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_followup_sequences_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_sequences_campaign",
+          "column_name": "campaign_id",
+          "referenced_table": "corev4_followup_campaigns",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_followup_sequences_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_sequences_pkey ON public.corev4_followup_sequences USING btree (id)"
+        },
+        {
+          "index_name": "corev4_followup_sequences_campaign_id_step_number_key",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_sequences_campaign_id_step_number_key ON public.corev4_followup_sequences USING btree (campaign_id, step_number)"
+        },
+        {
+          "index_name": "idx_followup_sequences_campaign",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_sequences_campaign ON public.corev4_followup_sequences USING btree (campaign_id)"
+        }
+      ]
+    },
+    "corev4_followup_stage_history": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_stage_history_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "followup_execution_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "old_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 20,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "new_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 20,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "changed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "changed_by",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 100,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 9
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_followup_stage_history_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_stage_history_execution",
+          "column_name": "followup_execution_id",
+          "referenced_table": "corev4_followup_executions",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_stage_history_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_followup_stage_history_company_id_fkey",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_followup_stage_history_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_stage_history_pkey ON public.corev4_followup_stage_history USING btree (id)"
+        },
+        {
+          "index_name": "idx_followup_stage_hist_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_stage_hist_contact ON public.corev4_followup_stage_history USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_followup_stage_hist_exec",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_stage_hist_exec ON public.corev4_followup_stage_history USING btree (followup_execution_id)"
+        },
+        {
+          "index_name": "idx_followup_stage_hist_changed",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_stage_hist_changed ON public.corev4_followup_stage_history USING btree (changed_at DESC)"
+        }
+      ]
+    },
+    "corev4_followup_steps": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_steps_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "config_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "step_number",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "wait_hours",
+          "type": "integer",
+          "nullable": false,
+          "default": "0",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "wait_minutes",
+          "type": "integer",
+          "nullable": false,
+          "default": "0",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 5
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_followup_steps_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "corev4_followup_steps_config_id_fkey",
+          "column_name": "config_id",
+          "referenced_table": "corev4_followup_configs",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_followup_steps_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_followup_steps_pkey ON public.corev4_followup_steps USING btree (id)"
+        },
+        {
+          "index_name": "unique_step_per_config",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX unique_step_per_config ON public.corev4_followup_steps USING btree (config_id, step_number)"
+        },
+        {
+          "index_name": "idx_followup_steps_config",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_steps_config ON public.corev4_followup_steps USING btree (config_id)"
+        },
+        {
+          "index_name": "idx_followup_steps_step",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_followup_steps_step ON public.corev4_followup_steps USING btree (step_number)"
+        }
+      ]
+    },
+    "corev4_lead_state": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_lead_state_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 3
+        },
+        {
+          "name": "authority_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "need_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 5
+        },
+        {
+          "name": "urgency_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 6
+        },
+        {
+          "name": "money_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 7
+        },
+        {
+          "name": "total_score",
+          "type": "numeric",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 5,
+          "position": 8
+        },
+        {
+          "name": "qualification_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null,
+          "max_length": 20,
+          "numeric_precision": null,
+          "position": 9
+        },
+        {
+          "name": "profile",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 10
+        },
+        {
+          "name": "main_pain",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 11
+        },
+        {
+          "name": "main_objection",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "prob_conversion",
+          "type": "numeric",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 5,
+          "position": 13
+        },
+        {
+          "name": "next_objective",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 14
+        },
+        {
+          "name": "suggested_question",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 15
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'cold'::character varying",
+          "max_length": 50,
+          "numeric_precision": null,
+          "position": 16
+        },
+        {
+          "name": "last_analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 17
+        },
+        {
+          "name": "analysis_count",
+          "type": "integer",
+          "nullable": true,
+          "default": "0",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 18
+        },
+        {
+          "name": "is_qualified",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 19
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 20
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 21
+        },
+        {
+          "name": "analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 22
+        },
+        {
+          "name": "last_analysis_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 23
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_lead_state_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_lead_state_contact",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_lead_state_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_lead_state_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_lead_state_company_id_fkey",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_lead_state_contact_id_key",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_lead_state_contact_id_key ON public.corev4_lead_state USING btree (contact_id)"
+        },
+        {
+          "index_name": "idx_lead_state_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_lead_state_contact ON public.corev4_lead_state USING btree (contact_id)"
+        },
+        {
+          "index_name": "corev4_lead_state_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_lead_state_pkey ON public.corev4_lead_state USING btree (id)"
+        },
+        {
+          "index_name": "idx_lead_state_company",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_lead_state_company ON public.corev4_lead_state USING btree (company_id)"
+        },
+        {
+          "index_name": "idx_lead_state_total_score",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_lead_state_total_score ON public.corev4_lead_state USING btree (total_score DESC)"
+        },
+        {
+          "index_name": "idx_lead_state_stage",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_lead_state_stage ON public.corev4_lead_state USING btree (qualification_stage)"
+        },
+        {
+          "index_name": "idx_lead_state_last_analyzed",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_lead_state_last_analyzed ON public.corev4_lead_state USING btree (last_analyzed_at)"
+        },
+        {
+          "index_name": "idx_lead_state_qualified",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_lead_state_qualified ON public.corev4_lead_state USING btree (is_qualified, company_id, total_score DESC)"
+        }
+      ]
+    },
+    "corev4_message_dedup": {
+      "columns": [
+        {
+          "name": "message_id",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 1
+        },
+        {
+          "name": "whatsapp_id",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 2
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 3
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        },
+        {
+          "name": "received_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "processed",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "workflow_execution_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "received_at_second",
+          "type": "bigint",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 64,
+          "position": 8
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_message_dedup_pkey",
+          "column_name": "message_id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_message_dedup_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_dedup_contact",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_message_dedup_whatsapp_time",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_message_dedup_whatsapp_time ON public.corev4_message_dedup USING btree (whatsapp_id, received_at DESC, company_id)"
+        },
+        {
+          "index_name": "corev4_message_dedup_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_message_dedup_pkey ON public.corev4_message_dedup USING btree (message_id)"
+        },
+        {
+          "index_name": "idx_dedup_received",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_dedup_received ON public.corev4_message_dedup USING btree (received_at DESC)"
+        },
+        {
+          "index_name": "idx_dedup_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_dedup_contact ON public.corev4_message_dedup USING btree (contact_id, received_at DESC)"
+        },
+        {
+          "index_name": "idx_dedup_whatsapp_second",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX idx_dedup_whatsapp_second ON public.corev4_message_dedup USING btree (whatsapp_id, received_at_second)"
+        }
+      ]
+    },
+    "corev4_message_media": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_message_media_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "message_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 2
+        },
+        {
+          "name": "storage_provider",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 3
+        },
+        {
+          "name": "storage_path",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 4
+        },
+        {
+          "name": "storage_url",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 5
+        },
+        {
+          "name": "original_url",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 6
+        },
+        {
+          "name": "media_type",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 7
+        },
+        {
+          "name": "mime_type",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 8
+        },
+        {
+          "name": "file_size",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 9
+        },
+        {
+          "name": "width",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 10
+        },
+        {
+          "name": "height",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 11
+        },
+        {
+          "name": "thumbnail_path",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 12
+        },
+        {
+          "name": "embedding",
+          "type": "USER-DEFINED",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 13
+        },
+        {
+          "name": "ocr_text",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 14
+        },
+        {
+          "name": "transcription",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 15
+        },
+        {
+          "name": "ai_description",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 16
+        },
+        {
+          "name": "ai_tags",
+          "type": "ARRAY",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 17
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 18
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 19
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_message_media_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "fk_message_media_company",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_message_media_company_id_fkey",
+          "column_name": "company_id",
+          "referenced_table": "corev4_companies",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "corev4_message_media_message_id_fkey",
+          "column_name": "message_id",
+          "referenced_table": "corev4_chat_history",
+          "referenced_column": "id"
+        },
+        {
+          "constraint_name": "fk_message_media_message",
+          "column_name": "message_id",
+          "referenced_table": "corev4_chat_history",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_message_media_message",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_message_media_message ON public.corev4_message_media USING btree (message_id, company_id)"
+        },
+        {
+          "index_name": "corev4_message_media_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_message_media_pkey ON public.corev4_message_media USING btree (id)"
+        },
+        {
+          "index_name": "idx_message_media_company_message",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_message_media_company_message ON public.corev4_message_media USING btree (company_id, message_id)"
+        }
+      ]
+    },
+    "corev4_n8n_chat_histories": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_n8n_chat_histories_id_seq'::regclass)",
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 1
+        },
+        {
+          "name": "session_id",
+          "type": "character varying",
+          "nullable": false,
+          "default": null,
+          "max_length": 255,
+          "numeric_precision": null,
+          "position": 2
+        },
+        {
+          "name": "message",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": null,
+          "position": 3
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null,
+          "max_length": null,
+          "numeric_precision": 32,
+          "position": 4
+        }
+      ],
+      "primary_keys": [
+        {
+          "constraint_name": "corev4_n8n_chat_histories_pkey",
+          "column_name": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "corev4_n8n_chat_histories_contact_id_fkey",
+          "column_name": "contact_id",
+          "referenced_table": "corev4_contacts",
+          "referenced_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "corev4_n8n_chat_histories_pkey",
+          "is_unique": true,
+          "is_primary": false,
+          "definition": "CREATE UNIQUE INDEX corev4_n8n_chat_histories_pkey ON public.corev4_n8n_chat_histories USING btree (id)"
+        },
+        {
+          "index_name": "idx_n8n_chat_histories_session",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_n8n_chat_histories_session ON public.corev4_n8n_chat_histories USING btree (session_id)"
+        },
+        {
+          "index_name": "idx_n8n_chat_contact",
+          "is_unique": false,
+          "is_primary": false,
+          "definition": "CREATE INDEX idx_n8n_chat_contact ON public.corev4_n8n_chat_histories USING btree (contact_id)"
+        }
+      ]
+    }
+  }
+}

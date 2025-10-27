@@ -58,22 +58,47 @@ FOREIGN KEY (contact_id) REFERENCES corev4_contacts(id) ON DELETE CASCADE;
 |-------|-------|---------------|----------|
 | `corev4_ai_decisions` | **No `company_id` field** | Data leak between companies | **CRITICAL** |
 
-**Recommended Actions:**
+**⚠️ IMPORTANT NOTE:**
+The simple SQL approach below will FAIL if the table has existing data. This is because you cannot add a NOT NULL column to a table with data without first providing values.
+
+**❌ This will ERROR (kept for reference):**
 ```sql
--- Add company_id to ai_decisions
+-- DON'T USE THIS - Will fail on tables with data!
 ALTER TABLE corev4_ai_decisions
-ADD COLUMN company_id UUID NOT NULL REFERENCES corev4_companies(id) ON DELETE CASCADE;
+ADD COLUMN company_id UUID NOT NULL REFERENCES corev4_companies(id);
+```
 
--- Add index for performance
-CREATE INDEX idx_ai_decisions_company ON corev4_ai_decisions(company_id);
+**✅ CORRECT APPROACH:**
+See detailed migration script: [`migrations/001_add_company_id_to_ai_decisions.sql`](migrations/001_add_company_id_to_ai_decisions.sql)
 
--- Update RLS policies
-ALTER TABLE corev4_ai_decisions ENABLE ROW LEVEL SECURITY;
+The migration follows these steps:
+1. Add column as NULLABLE
+2. Populate company_id from related tables (followup_executions)
+3. Verify no NULL values remain
+4. Set column to NOT NULL
+5. Add Foreign Key constraint
+6. Create indexes
+7. Enable RLS and create policies
 
-CREATE POLICY "Users can only see their company's AI decisions"
-ON corev4_ai_decisions
-FOR SELECT
-USING (company_id = auth.jwt() ->> 'company_id');
+**Quick Summary:**
+```sql
+-- Step-by-step approach (see full migration file for details)
+-- 1. Add nullable column
+ALTER TABLE corev4_ai_decisions ADD COLUMN company_id UUID;
+
+-- 2. Populate from related data
+UPDATE corev4_ai_decisions ad
+SET company_id = fe.company_id
+FROM corev4_followup_executions fe
+WHERE ad.followup_execution_id = fe.id;
+
+-- 3. Make required and add constraints
+ALTER TABLE corev4_ai_decisions ALTER COLUMN company_id SET NOT NULL;
+ALTER TABLE corev4_ai_decisions
+ADD CONSTRAINT fk_ai_decisions_company
+FOREIGN KEY (company_id) REFERENCES corev4_companies(id) ON DELETE CASCADE;
+
+-- 4. Add indexes and RLS (see full migration)
 ```
 
 ---
@@ -169,13 +194,46 @@ All critical tables have proper multi-tenant isolation **EXCEPT** ai_decisions:
 
 ---
 
+## 🔧 MIGRATION FILES
+
+All migration scripts have been created and are ready for execution:
+
+### Phase 1 - Immediate (Ready to Execute)
+- **[migrations/001_add_company_id_to_ai_decisions.sql](migrations/001_add_company_id_to_ai_decisions.sql)**
+  - Adds company_id to ai_decisions table
+  - Includes data migration, FK, indexes, and RLS policies
+  - **CRITICAL SECURITY FIX**
+
+- **[migrations/002_add_missing_foreign_keys.sql](migrations/002_add_missing_foreign_keys.sql)**
+  - Adds 5 missing foreign keys
+  - Includes orphan detection and cleanup
+  - Performance indexes included
+
+### Documentation
+- **[migrations/README.md](migrations/README.md)**
+  - Complete execution guide
+  - Step-by-step checklists
+  - Troubleshooting section
+  - Rollback procedures
+
+---
+
 ## 🔧 NEXT STEPS
 
-1. **Review this report** with the development team
-2. **Create migration scripts** for Phase 1 changes
-3. **Test migrations** on development environment
-4. **Deploy to production** with proper rollback plan
-5. **Monitor query performance** after adding new FKs and indexes
+1. ✅ **Review this report** with the development team
+2. ✅ **Migration scripts created** - Ready for execution
+3. 🔄 **Test migrations** on development environment
+   - Follow the checklist in `migrations/README.md`
+   - Execute ONE section at a time
+   - Verify after each step
+4. 🔄 **Deploy to production** with proper rollback plan
+   - Schedule during low-traffic period
+   - Have backups ready
+   - Monitor performance
+5. 🔄 **Monitor query performance** after adding new FKs and indexes
+   - Run `ANALYZE` on modified tables
+   - Check slow query logs
+   - Verify RLS policies are working
 
 ---
 
@@ -188,5 +246,17 @@ All critical tables have proper multi-tenant isolation **EXCEPT** ai_decisions:
 
 ---
 
-**Report Status:** ✅ Phase 1 Complete
-**Next Phase:** Create migration scripts
+## 📊 REPORT STATUS
+
+**Audit Phase:** ✅ Complete
+**Migration Scripts:** ✅ Created and Ready
+**Current Phase:** 🔄 Ready for Testing
+**Next Milestone:** Deploy to Development Environment
+
+**Files Created:**
+- `DATABASE_AUDIT_REPORT.md` (this file)
+- `migrations/001_add_company_id_to_ai_decisions.sql`
+- `migrations/002_add_missing_foreign_keys.sql`
+- `migrations/README.md`
+
+**Last Updated:** 2025-10-27

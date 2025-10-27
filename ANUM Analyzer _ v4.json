@@ -1,0 +1,570 @@
+{
+  "name": "ANUM Analyzer | v4",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  id,\n  session_id,\n  message->>'type' as role,\n  message->>'content' as message_content,\n  $1::BIGINT as contact_id\nFROM corev4_n8n_chat_histories\nWHERE session_id LIKE 'contact_' || $1 || '_%'\nORDER BY id DESC\nLIMIT 10",
+        "options": {
+          "queryReplacement": "={{ [$json.contact_id] }}"
+        }
+      },
+      "id": "36886176-4852-4371-9af5-c27776f3906d",
+      "name": "Fetch: Last 10 Messages",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1120,
+        208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  ls.contact_id,\n  ls.authority_score,\n  ls.need_score,\n  ls.urgency_score,\n  ls.money_score,\n  ls.total_score,\n  ls.is_qualified,\n  ls.qualification_stage,\n  ls.analyzed_at,\n  c.full_name as contact_name\nFROM corev4_lead_state ls\nJOIN corev4_contacts c ON ls.contact_id = c.id\nWHERE ls.contact_id = $1",
+        "options": {
+          "queryReplacement": "={{ $json.contact_id }}"
+        }
+      },
+      "id": "7bbad983-17f5-4a7d-b9f2-26b26dd0d2d1",
+      "name": "Fetch: Current ANUM State",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -896,
+        208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-error",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "9ae569f1-db3e-4796-9a87-db34b1772912",
+      "name": "Check: Parsing Errors",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analise a conversa completa abaixo e extraia sinais de qualificação ANUM.\n\n# INFORMAÇÕES DO LEAD\nNome: {{ $json.contact_name }}\nMensagens analisadas: {{ $json.message_count }}\nÚltima análise: {{ $json.last_analyzed_at || 'Nunca analisado' }}\n\n# SCORES ATUAIS ANUM\n- Authority: {{ $json.current_authority }}/100\n- Need: {{ $json.current_need }}/100\n- Urgency: {{ $json.current_urgency }}/100\n- Money: {{ $json.current_money }}/100\n- Total Score: {{ $json.current_total_score }}/100\n- Status: {{ $json.current_is_qualified ? 'QUALIFICADO' : 'NÃO QUALIFICADO' }}\n- Stage: {{ $json.current_qualification_stage }}\n\n---\n\n# CONVERSA COMPLETA (últimas 10 mensagens)\n\n{{ $json.conversation }}\n\n---\n\n# SUA TAREFA\n\nAnalise TODA a conversa acima e determine NOVOS scores ANUM baseado nas evidências encontradas.\n\n**IMPORTANTE:**\n- Analise a conversa COMPLETA, não apenas a última mensagem\n- Seja CONSERVADOR: só aumente scores com evidência clara\n- Mantenha scores se não houver nova informação\n- Extraia citações textuais como evidência\n\n**Responda APENAS com JSON válido neste formato:**\n\n```json\n{\n  \"authority_score\": 75,\n  \"authority_evidence\": \"Lead disse: 'Sou CEO da empresa'\",\n  \n  \"need_score\": 80,\n  \"need_evidence\": \"Mencionou: 'problema crítico de vendas'\",\n  \n  \"urgency_score\": 60,\n  \"urgency_evidence\": \"Timeline: 'preciso resolver em 30 dias'\",\n  \n  \"money_score\": 70,\n  \"money_evidence\": \"Budget: 'tenho R$40.000 disponível'\",\n  \n  \"confidence\": 0.85,\n  \"reasoning\": \"CEO confirmado = Authority alta. Problema crítico = Need alto. Prazo de 30 dias = Urgency média-alta. Budget aprovado = Money bom.\",\n  \n  \"qualification_stage\": \"full\"\n}\n```\n\n**REGRAS:**\n- `qualification_stage`: \"pre\" (< 40 total), \"partial\" (40-59), \"full\" (60-79), \"rejected\" (lead não qualificado)\n- `confidence`: 0.0 a 1.0 (quão certo você está)\n- Todas as evidências devem ser citações diretas ou resumos fiéis\n\n**RESPONDA APENAS O JSON, NADA MAIS.**",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "Você é um especialista em qualificação de leads B2B usando framework ANUM.\nSua tarefa é analisar conversas e extrair scores objetivos (0-100) para:\n\n- Authority: Poder de decisão (CEO=90-100, Gerente=50-69, Analista=30-49)\n- Need: Intensidade do problema (Crítico=90-100, Nice-to-have=30-49)\n- Urgency: Timeline (Esta semana=90-100, Este quarter=30-49)\n- Money: Budget disponível (R$50k+=90-100, <R$5k=0-29)\n\nSeja conservador: só aumente scores se houver EVIDÊNCIA CLARA na conversa."
+        }
+      },
+      "id": "8fcee777-bc83-496a-b92b-1b17c0ad3315",
+      "name": "AI Agent: ANUM Analyzer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar resposta do AI Agent\nconst aiResponse = $input.first().json.output;\nconst contextData = $('Prepare: Analysis Context').first().json;\n\n// Limpar resposta (remover markdown se houver)\nlet jsonStr = aiResponse.trim();\njsonStr = jsonStr.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\n// Parse JSON\nlet parsed;\ntry {\n  parsed = JSON.parse(jsonStr);\n} catch (error) {\n  // Se falhar parse, retornar erro\n  return [{\n    json: {\n      error: true,\n      reason: 'json_parse_failed',\n      message: 'Failed to parse AI response as JSON',\n      raw_response: aiResponse.substring(0, 500),\n      parse_error: error.message\n    }\n  }];\n}\n\n// Validar campos obrigatórios\nconst requiredFields = [\n  'authority_score', 'need_score', 'urgency_score', 'money_score',\n  'confidence', 'qualification_stage'\n];\n\nfor (const field of requiredFields) {\n  if (parsed[field] === undefined || parsed[field] === null) {\n    return [{\n      json: {\n        error: true,\n        reason: 'missing_field',\n        message: `Missing required field: ${field}`,\n        parsed_data: parsed\n      }\n    }];\n  }\n}\n\n// Validar ranges\nif (parsed.authority_score < 0 || parsed.authority_score > 100 ||\n    parsed.need_score < 0 || parsed.need_score > 100 ||\n    parsed.urgency_score < 0 || parsed.urgency_score > 100 ||\n    parsed.money_score < 0 || parsed.money_score > 100) {\n  return [{\n    json: {\n      error: true,\n      reason: 'invalid_score_range',\n      message: 'Scores must be between 0-100',\n      parsed_data: parsed\n    }\n  }];\n}\n\nif (parsed.confidence < 0 || parsed.confidence > 1) {\n  return [{\n    json: {\n      error: true,\n      reason: 'invalid_confidence',\n      message: 'Confidence must be between 0-1',\n      parsed_data: parsed\n    }\n  }];\n}\n\n// Calcular total score\nconst totalScore = Math.round(\n  (parsed.authority_score + parsed.need_score + \n   parsed.urgency_score + parsed.money_score) / 4\n);\n\n// Determinar qualificação\nconst isQualified = totalScore >= 60;\n\n// Calcular deltas\nconst deltas = {\n  authority_delta: parsed.authority_score - contextData.current_authority,\n  need_delta: parsed.need_score - contextData.current_need,\n  urgency_delta: parsed.urgency_score - contextData.current_urgency,\n  money_delta: parsed.money_score - contextData.current_money\n};\n\n// Preparar evidence JSONB\nconst evidence = {\n  authority: parsed.authority_evidence || null,\n  need: parsed.need_evidence || null,\n  urgency: parsed.urgency_evidence || null,\n  money: parsed.money_evidence || null\n};\n\n// Retornar dados estruturados\nreturn [{\n  json: {\n    // Identificação\n    contact_id: contextData.contact_id,\n    company_id: contextData.company_id,\n    \n    // Scores ANUM\n    authority_score: parsed.authority_score,\n    need_score: parsed.need_score,\n    urgency_score: parsed.urgency_score,\n    money_score: parsed.money_score,\n    total_score: totalScore,\n    \n    // Qualificação\n    is_qualified: isQualified,\n    qualification_stage: parsed.qualification_stage,\n    \n    // Evidências\n    evidence: evidence,\n    \n    // Metadata da análise\n    confidence_score: parsed.confidence,\n    messages_analyzed: contextData.message_count,\n    analysis_reasoning: parsed.reasoning || '',\n    \n    // Deltas\n    authority_delta: deltas.authority_delta,\n    need_delta: deltas.need_delta,\n    urgency_delta: deltas.urgency_delta,\n    money_delta: deltas.money_delta,\n    \n    // Trigger info\n    trigger_source: 'anum_analyzer_v4',\n    analyzed_at: new Date().toISOString(),\n    \n    // Para debug\n    raw_ai_response: aiResponse\n  }\n}];"
+      },
+      "id": "0e4add9d-06b3-41c0-9f17-4c938c3da57c",
+      "name": "Parse: ANUM Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "corev4_anum_history",
+          "mode": "list",
+          "cachedResultName": "corev4_anum_history"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $json.contact_id }}",
+            "company_id": "={{ $json.company_id }}",
+            "authority_score": "={{ $json.authority_score }}",
+            "need_score": "={{ $json.need_score }}",
+            "urgency_score": "={{ $json.urgency_score }}",
+            "money_score": "={{ $json.money_score }}",
+            "total_score": "={{ $json.total_score }}",
+            "is_qualified": "={{ $json.is_qualified }}",
+            "qualification_stage": "={{ $json.qualification_stage }}",
+            "evidence": "={{ JSON.stringify($json.evidence) }}",
+            "confidence_score": "={{ $json.confidence_score }}",
+            "messages_analyzed": "={{ $json.messages_analyzed }}",
+            "analysis_reasoning": "={{ $json.analysis_reasoning }}",
+            "authority_delta": "={{ $json.authority_delta }}",
+            "need_delta": "={{ $json.need_delta }}",
+            "urgency_delta": "={{ $json.urgency_delta }}",
+            "money_delta": "={{ $json.money_delta }}",
+            "trigger_source": "={{ $json.trigger_source }}",
+            "analyzed_at": "={{ $json.analyzed_at }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "61117029-a854-414d-9a42-f3ebf7f19e4c",
+      "name": "Insert: ANUM History Record",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        352,
+        48
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1568,
+        208
+      ],
+      "id": "8cc009a8-834a-4494-80b9-0ad8a29487ec",
+      "name": "Receive: Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "contact-id-exists",
+              "leftValue": "={{ $json.contact_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "any",
+                "operation": "exists"
+              }
+            },
+            {
+              "id": "contact-id-number",
+              "leftValue": "={{ typeof $json.contact_id }}",
+              "rightValue": "number",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d3a9891e-e549-459f-8eb3-a6f94ef83b1c",
+      "name": "Validate: Input Data",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1344,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar mensagens e estado atual\nconst messages = $('Fetch: Last 10 Messages').all();\nconst currentState = $('Fetch: Current ANUM State').first().json;\nconst inputData = $('Validate: Input Data').first().json;\n\n// Verificar se tem mensagens suficientes\nif (!messages || messages.length === 0) {\n  return [{\n    json: {\n      error: true,\n      reason: 'no_messages',\n      message: 'No messages found for this contact'\n    }\n  }];\n}\n\n// Verificar se tem pelo menos mensagens do lead (role = 'human')\nconst leadMessages = messages.filter(m => m.json.role === 'human');\nif (leadMessages.length === 0) {\n  return [{\n    json: {\n      error: true,\n      reason: 'no_lead_messages',\n      message: 'No lead messages found (only bot messages)'\n    }\n  }];\n}\n\n// Formatar conversa (ordem cronológica)\nconst conversation = messages\n  .reverse() // Mais antiga primeiro\n  .map(item => {\n    const msg = item.json;\n    const sender = msg.role === 'human' ? 'Lead' : 'Frank (Bot)';\n    \n    // Extrair apenas a mensagem real do lead\n    let content = msg.message_content || '';\n    \n    // Se for mensagem do lead (human), extrair só a linha \"Mensagem recebida:\"\n    if (msg.role === 'human' && content.includes('**Mensagem recebida:**')) {\n      const match = content.match(/\\*\\*Mensagem recebida:\\*\\*\\s*\"([^\"]+)\"/);  \n      if (match && match[1]) {\n        content = match[1];\n      }\n    }\n    \n    return `${sender}: ${content}`;\n  })\n  .join('\\n\\n');\n\n// Preparar contexto completo\nreturn [{\n  json: {\n    contact_id: inputData.contact_id,\n    company_id: inputData.company_id || currentState.company_id || 1,\n    contact_name: currentState.contact_name || 'Lead',\n    \n    // Conversa formatada\n    conversation: conversation,\n    message_count: messages.length,\n    lead_message_count: leadMessages.length,\n    \n    // Estado atual ANUM\n    current_authority: currentState.authority_score || 0,\n    current_need: currentState.need_score || 0,\n    current_urgency: currentState.urgency_score || 0,\n    current_money: currentState.money_score || 0,\n    current_total_score: currentState.total_score || 0,\n    current_is_qualified: currentState.is_qualified || false,\n    current_qualification_stage: currentState.qualification_stage || 'pre',\n    \n    // Metadata\n    last_analyzed_at: currentState.analyzed_at,\n    trigger_timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "f4d0f8d2-8d7a-48f3-895e-e943ec3afecc",
+      "name": "Prepare: Analysis Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "success-false",
+              "name": "success",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "error-reason",
+              "name": "error",
+              "value": "={{ $json.reason }}",
+              "type": "string"
+            },
+            {
+              "id": "error-message",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3f2cfed8-ea76-44e2-8245-7657fd52b1d1",
+      "name": "Format: Error Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini-2025-04-14"
+        },
+        "options": {
+          "maxTokens": 500,
+          "temperature": 0.7
+        }
+      },
+      "id": "8b7c64db-fbb9-4e9c-9916-ca9e76cfba50",
+      "name": "Model: OpenAI Chat",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        176
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "txoE7pVX433qEz2A",
+          "name": "OpenAI | CORE ONE™ - FRANK | TEXTO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        176
+      ],
+      "id": "960ed904-f5f1-43ec-afcc-517a68e21d56",
+      "name": "Model: Gemini Chat",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "LzScbb9FM7NYxbHO",
+          "name": "Google Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE corev4_lead_state\nSET \n  authority_score = $1,\n  need_score = $2,\n  urgency_score = $3,\n  money_score = $4,\n  total_score = $5,\n  is_qualified = $6,\n  qualification_stage = $7,\n  analyzed_at = $8,\n  last_analysis_id = $9,\n  updated_at = NOW()\nWHERE contact_id = $10\nRETURNING *",
+        "options": {
+          "queryReplacement": "={{ [\n  $json.authority_score,\n  $json.need_score,\n  $json.urgency_score,\n  $json.money_score,\n  $json.total_score,\n  $json.is_qualified,\n  $json.qualification_stage,\n  $json.analyzed_at,\n  $('Insert: ANUM History Record').first().json.id,\n  $json.contact_id\n] }}"
+        }
+      },
+      "id": "511880a0-2526-4a9f-8d79-2ed242ec1669",
+      "name": "Update: Lead State",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        576,
+        48
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "success-true",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "contact-id-output",
+              "name": "contact_id",
+              "value": "={{ $('Parse: ANUM Response').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "scores-output",
+              "name": "scores",
+              "value": "={{ {\n  authority: $('Parse: ANUM Response').item.json.authority_score,\n  need: $('Parse: ANUM Response').item.json.need_score,\n  urgency: $('Parse: ANUM Response').item.json.urgency_score,\n  money: $('Parse: ANUM Response').item.json.money_score\n} }}",
+              "type": "object"
+            },
+            {
+              "id": "total-score-output",
+              "name": "total_score",
+              "value": "={{ $('Parse: ANUM Response').item.json.total_score }}",
+              "type": "number"
+            },
+            {
+              "id": "is-qualified-output",
+              "name": "is_qualified",
+              "value": "={{ $('Parse: ANUM Response').item.json.is_qualified }}",
+              "type": "boolean"
+            },
+            {
+              "id": "deltas-output",
+              "name": "deltas",
+              "value": "={{ {\n  authority: $('Parse: ANUM Response').item.json.authority_delta,\n  need: $('Parse: ANUM Response').item.json.need_delta,\n  urgency: $('Parse: ANUM Response').item.json.urgency_delta,\n  money: $('Parse: ANUM Response').item.json.money_delta\n} }}",
+              "type": "object"
+            },
+            {
+              "id": "history-id-output",
+              "name": "history_id",
+              "value": "={{ $('Insert: ANUM History Record').item.json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "analyzed-at-output",
+              "name": "analyzed_at",
+              "value": "={{ $('Parse: ANUM Response').item.json.analyzed_at }}",
+              "type": "string"
+            },
+            {
+              "id": "confidence-output",
+              "name": "confidence",
+              "value": "={{ $('Parse: ANUM Response').item.json.confidence_score }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "214ba6b4-2817-4595-ba8f-7cad458f784c",
+      "name": "Format: Success Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        48
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch: Last 10 Messages": {
+      "main": [
+        [
+          {
+            "node": "Fetch: Current ANUM State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch: Current ANUM State": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Analysis Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Parsing Errors": {
+      "main": [
+        [
+          {
+            "node": "Format: Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent: ANUM Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: ANUM Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Parse: ANUM Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse: ANUM Response": {
+      "main": [
+        [
+          {
+            "node": "Insert: ANUM History Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: ANUM History Record": {
+      "main": [
+        [
+          {
+            "node": "Update: Lead State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive: Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate: Input Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate: Input Data": {
+      "main": [
+        [
+          {
+            "node": "Fetch: Last 10 Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Analysis Context": {
+      "main": [
+        [
+          {
+            "node": "Check: Parsing Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model: OpenAI Chat": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: ANUM Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model: Gemini Chat": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: ANUM Analyzer",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Update: Lead State": {
+      "main": [
+        [
+          {
+            "node": "Format: Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b2e88a12-5335-4576-8398-ddd617b3b69e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5c6394fedb685d155bbe72063becfd91d616d8e123397941c9863e7b805328ae"
+  },
+  "id": "8F6DWDbmaPCZrI18",
+  "tags": []
+}

@@ -1,0 +1,1566 @@
+{
+  "name": "Frank Webhook - Main Router | v4",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "lO3F2ESDmnRVMaBz",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/lO3F2ESDmnRVMaBz",
+          "cachedResultName": "Normalize Evolution API | v4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "raw_webhook_data": "={{ $json }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -3744,
+        704
+      ],
+      "id": "e08abd71-5d68-4437-87d8-753a1bcfc3b0",
+      "name": "Execute: Normalize Evolution Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "audio-check",
+              "leftValue": "={{ $json.media_type }}",
+              "rightValue": "audio",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3520,
+        704
+      ],
+      "id": "bdc321d0-fb26-42de-9fb8-74bc4f400cf0",
+      "name": "Route: Audio Messages"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3072,
+        704
+      ],
+      "id": "4830d044-1410-47b2-be80-677daf90430e",
+      "name": "Merge: Audio and Text",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "not-broadcast",
+              "leftValue": "={{ $('Execute: Normalize Evolution Data').item.json.whatsapp_id }}",
+              "rightValue": "status@broadcast",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "not-from-me",
+              "leftValue": "={{ $('Execute: Normalize Evolution Data').item.json.is_from_me }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "259eeae6-1004-481d-8215-fae61830d621",
+      "name": "Filter: Valid Messages",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2848,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  message_id,\n  whatsapp_id,\n  received_at\nFROM corev4_message_dedup\nWHERE whatsapp_id = '={{ $json.whatsapp_id }}'\n  AND received_at > NOW() - INTERVAL '5 seconds'\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2624,
+        704
+      ],
+      "id": "c04eda4f-d5ae-4176-8b3d-00f6cd92f2c7",
+      "name": "Query: Message Deduplication",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "duplicate-exists",
+              "leftValue": "={{ $input.all().length > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2400,
+        704
+      ],
+      "id": "d965c79e-f83e-4cbb-b426-631dfd888808",
+      "name": "Route: Duplicate Detection"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"status\": \"received\", \n  \"messageId\": $json.message_id\n} }}",
+        "options": {}
+      },
+      "id": "0e958ef9-e218-4200-b27e-c80995466d0d",
+      "name": "Respond: Webhook Acknowledgment",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1952,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "norm-phone",
+              "name": "normalized_phone",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.phone_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2abae91d-f06f-41d8-b154-d84bdebed8dd",
+      "name": "Prepare: Contact Lookup",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1728,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "corev4_contacts",
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp",
+              "condition": "eq",
+              "keyValue": "={{ $('Execute: Normalize Evolution Data').item.json.whatsapp_id }}"
+            }
+          ]
+        }
+      },
+      "id": "8d856bb2-3d1b-4684-b577-74ecf291cc4a",
+      "name": "Fetch: Contact Record",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1504,
+        704
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "enrich-1",
+              "name": "contact_id",
+              "value": "={{ $('Fetch: Contact Record').first().json.id || null }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-2",
+              "name": "company_id",
+              "value": "={{ $json.company_id || 1 }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-3",
+              "name": "opt_out",
+              "value": "={{ $('Fetch: Contact Record').first().json.opt_out === true }}",
+              "type": "boolean"
+            },
+            {
+              "id": "enrich-4",
+              "name": "contact_exists",
+              "value": "={{ $('Fetch: Contact Record').first().json.id != null && $('Fetch: Contact Record').first().json.id !== undefined }}",
+              "type": "boolean"
+            },
+            {
+              "id": "enrich-5",
+              "name": "whatsapp_id",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-6",
+              "name": "contact_name",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-7",
+              "name": "message_content",
+              "value": "={{ $('Merge: Audio and Text').item.json.message_content ?? $('Execute: Normalize Evolution Data').item.json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-8",
+              "name": "message_type",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-9",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Contact Lookup').item.json.normalized_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-11",
+              "name": "evolution_api_url",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-12",
+              "name": "evolution_instance",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "api-key",
+              "name": "evolution_api_key",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.api_key}}",
+              "type": "string"
+            },
+            {
+              "id": "2c236264-2678-4d1b-8fc9-ec158ce0cf17",
+              "name": "message_id",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.message_id }}",
+              "type": "string"
+            },
+            {
+              "id": "4da4aae5-b0d1-4897-a5d7-65a3b586f106",
+              "name": "quoted_message",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.quoted_message }}",
+              "type": "string"
+            },
+            {
+              "id": "0cd3f0b7-804a-4c6f-ac32-3d92b4abe7bb",
+              "name": "transcribed",
+              "value": "={{ $('Merge: Audio and Text').item.json.transcribed }}",
+              "type": "string"
+            },
+            {
+              "id": "a840a24b-a174-4b17-ba7c-575ad2339596",
+              "name": "sender_type",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.sender_type }}",
+              "type": "string"
+            },
+            {
+              "id": "e4835d75-4bdf-488e-bb10-90cfe3a29bb3",
+              "name": "has_media",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.has_media }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f15fcd0e-b641-4920-a2b2-e211ca0bdaf1",
+              "name": "media_url",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.media_url }}",
+              "type": "string"
+            },
+            {
+              "id": "d674b258-0ce2-4592-9369-83d651a44bca",
+              "name": "media_mime_type",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.media_mime_type }}",
+              "type": "string"
+            },
+            {
+              "id": "ad2c63bf-6879-4d96-8f33-ea2bb74221ff",
+              "name": "media_type",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.media_type }}",
+              "type": "string"
+            },
+            {
+              "id": "bc0b4f5b-eb47-412f-acef-dd4cd737a48d",
+              "name": "caption",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.caption }}",
+              "type": "string"
+            },
+            {
+              "id": "0c8ceb5f-9f7d-4eb6-b336-d24c9d360a41",
+              "name": "body.data.message.base64",
+              "value": "={{ $('Execute: Normalize Evolution Data').item.json.body.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eda29628-8e0a-40be-b7a9-3b6d4c566d58",
+      "name": "Enrich: Message Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1280,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is-new",
+                    "leftValue": "={{ $json.contact_exists }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "new_contact"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is-blocked",
+                    "leftValue": "={{ $json.contact_exists }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "is-optout",
+                    "leftValue": "={{ $json.opt_out }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "blocked_contact"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is-active",
+                    "leftValue": "={{ $json.contact_exists }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "not-blocked",
+                    "leftValue": "={{ $json.opt_out }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "is-command",
+                    "leftValue": "={{ $json.message_content }}",
+                    "rightValue": "#",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "command"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is-active-chat",
+                    "leftValue": "={{ $json.contact_exists }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "not-blocked-chat",
+                    "leftValue": "={{ $json.opt_out }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "not-command",
+                    "leftValue": "={{ $json.message_content }}",
+                    "rightValue": "#",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notStartsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "active_chat"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "04990102-85e4-46cb-8500-da7ac110cefd",
+      "name": "Route: Contact Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1056,
+        672
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FkBpLfoPH1oHhWGa",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/FkBpLfoPH1oHhWGa",
+          "cachedResultName": "Create Contact Flow | v4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $json.contact_id }}",
+            "company_id": "={{ $json.company_id }}",
+            "opt_out": "={{ $json.opt_out }}",
+            "contact_exists": "={{ $json.contact_exists }}",
+            "whatsapp_id": "={{ $json.whatsapp_id }}",
+            "contact_name": "={{ $json.contact_name }}",
+            "message_content": "={{ $json.message_content }}",
+            "message_type": "={{ $json.message_type }}",
+            "phone_number": "={{ $json.phone_number }}",
+            "evolution_api_url": "={{ $json.evolution_api_url }}",
+            "evolution_instance": "={{ $json.evolution_instance }}",
+            "origin_source": "={{ $json.origin_source }}",
+            "evolution_api_key": "={{ $json.evolution_api_key }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        432
+      ],
+      "id": "c0c6a5c2-49a9-40ad-be45-987c9ec72f46",
+      "name": "Execute: Create Contact"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "JveEQlvxC8lIx2pU",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/JveEQlvxC8lIx2pU",
+          "cachedResultName": "Process Commands | v4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $json.contact_id }}",
+            "company_id": "={{ $json.company_id }}",
+            "opt_out": "={{ $json.opt_out }}",
+            "contact_exists": "={{ $json.contact_exists }}",
+            "whatsapp_id": "={{ $json.whatsapp_id }}",
+            "contact_name": "={{ $json.contact_name }}",
+            "message_content": "={{ $json.message_content }}",
+            "message_type": "={{ $json.message_type }}",
+            "phone_number": "={{ $json.phone_number }}",
+            "evolution_api_url": "={{ $json.evolution_api_url }}",
+            "evolution_instance": "={{ $json.evolution_instance }}",
+            "origin_source": "={{ $json.origin_source }}",
+            "evolution_api_key": "={{ $json.evolution_api_key }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        816
+      ],
+      "id": "1fd873e8-1669-4d54-af53-94e4a79e24e5",
+      "name": "Execute: Process Commands"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -384,
+        592
+      ],
+      "id": "34562c8f-aca9-443e-917a-580757efa36d",
+      "name": "Merge: Workflow Results"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93a82cff-d762-4f9a-ac79-713f2f3c1580",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Frank Chat').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "0d30cb13-f159-419b-af3a-bfeb6ddaf11b",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Frank Chat').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "7d2a251f-73ac-4791-92d4-52aa9f33b5fa",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Frank Chat').item.json.opt_out }}",
+              "type": "boolean"
+            },
+            {
+              "id": "3b6e9ae7-9b99-4aff-8cd3-4d42c620729e",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Frank Chat').item.json.contact_exists }}",
+              "type": "boolean"
+            },
+            {
+              "id": "55701e38-6b5c-41fc-b635-efdeb6e6b723",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Frank Chat').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "964095a2-df99-4e19-9b3e-33862db81fed",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Frank Chat').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "3e320c10-c9ee-4df4-b52f-57912fc476a1",
+              "name": "message_content",
+              "value": "={{ $('Prepare: Frank Chat').item.json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "853ab5e9-2593-4779-802f-607808d3512e",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Frank Chat').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "753a83ac-230c-4bb9-abd7-e64da5356f2a",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Frank Chat').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "52e9bd50-5fc7-455e-ac13-e3e9108da93d",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Frank Chat').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "30c9a5e6-7976-43c9-b5a5-808b05d7f673",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Frank Chat').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "42a9486b-741c-4bb7-9e1d-ed4ef7e27bbb",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Frank Chat').item.json.evolution_api_key }}",
+              "type": "string"
+            },
+            {
+              "id": "8829cb40-f58a-4476-bf0b-10025d80fcc0",
+              "name": "message_id",
+              "value": "={{ $('Prepare: Frank Chat').item.json.message_id }}",
+              "type": "string"
+            },
+            {
+              "id": "33701714-d7ac-4e2b-aaf6-65cfc0b5bf98",
+              "name": "quoted_message",
+              "value": "={{ $('Prepare: Frank Chat').item.json.quoted_message }}",
+              "type": "string"
+            },
+            {
+              "id": "213ca5b0-3b1a-4350-a1c3-097127b31c21",
+              "name": "transcribed",
+              "value": "={{ $('Prepare: Frank Chat').item.json.transcribed }}",
+              "type": "string"
+            },
+            {
+              "id": "277fa303-3d9a-436a-a258-deae5c71642e",
+              "name": "has_media",
+              "value": "={{ $('Prepare: Frank Chat').item.json.has_media }}",
+              "type": "boolean"
+            },
+            {
+              "id": "fd60bb78-2f91-4fd7-b7eb-8dc3d9b93301",
+              "name": "media_url",
+              "value": "={{ $('Prepare: Frank Chat').item.json.media_url }}",
+              "type": "string"
+            },
+            {
+              "id": "a0e1f58f-5dd8-4f34-a38d-0721313e60f0",
+              "name": "media_mime_type",
+              "value": "={{ $('Prepare: Frank Chat').item.json.media_mime_type }}",
+              "type": "string"
+            },
+            {
+              "id": "c626e966-4d30-498b-b924-7b6e48c61e6b",
+              "name": "media_type",
+              "value": "={{ $('Prepare: Frank Chat').item.json.media_type }}",
+              "type": "string"
+            },
+            {
+              "id": "bc0a9d25-2514-43ed-a7b3-3a3ff8c89fcf",
+              "name": "caption",
+              "value": "={{ $('Prepare: Frank Chat').item.json.caption }}",
+              "type": "string"
+            },
+            {
+              "id": "b1ad8d28-0d72-486a-8036-8c8a83b751de",
+              "name": "sender_type",
+              "value": "={{ $('Prepare: Frank Chat').item.json.sender_type }}",
+              "type": "string"
+            },
+            {
+              "id": "281d672e-1fca-4950-ba79-59709eb483d9",
+              "name": "body.data.message.base64",
+              "value": "={{ $('Prepare: Frank Chat').item.json['body.data.message.base64'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        1024
+      ],
+      "id": "36c82b3b-e97e-45c7-a9e9-474aab035ea9",
+      "name": "Restore: Frank Context"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "pvMsb1uQbB0E3LAF",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pvMsb1uQbB0E3LAF",
+          "cachedResultName": "Frank Chat | v4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $json.contact_id }}",
+            "company_id": "={{ $json.company_id }}",
+            "opt_out": "={{ $json.opt_out }}",
+            "contact_exists": "={{ $json.contact_exists }}",
+            "whatsapp_id": "={{ $json.whatsapp_id }}",
+            "contact_name": "={{ $json.contact_name }}",
+            "message_content": "={{ $json.message_content }}",
+            "message_type": "={{ $json.message_type }}",
+            "phone_number": "={{ $json.phone_number }}",
+            "evolution_api_url": "={{ $json.evolution_api_url }}",
+            "evolution_instance": "={{ $json.evolution_instance }}",
+            "evolution_api_key": "={{ $json.evolution_api_key }}",
+            "message_id": "={{ $json.message_id }}",
+            "quoted_message": "={{ $json.quoted_message }}",
+            "transcribed": "={{ $json.transcribed }}",
+            "has_media": "={{ $json.has_media }}",
+            "media_url": "={{ $json.media_url }}",
+            "media_mime_type": "={{ $json.media_mime_type }}",
+            "media_type": "={{ $json.media_type }}",
+            "caption": "={{ $json.caption }}",
+            "sender_type": "={{ $json.sender_type }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        1024
+      ],
+      "id": "edf066e3-65d4-4f2f-8c2e-826b26001b12",
+      "name": "Execute: Frank Chat"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "v6ujbeRaSjlJb6Jd",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/v6ujbeRaSjlJb6Jd",
+          "cachedResultName": "Process Audio Message | v4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "whatsapp_id": "={{ $json.whatsapp_id }}",
+            "evolution_instance": "={{ $json.evolution_instance }}",
+            "message_type": "={{ $json.message_type }}",
+            "is_from_me": "={{ $json.is_from_me }}",
+            "message_timestamp": "={{ $json.message_timestamp }}",
+            "contact_name": "={{ $json.contact_name }}",
+            "message_content": "={{ $json.message_content }}",
+            "has_media": "={{ $json.has_media }}",
+            "media_type": "={{ $json.media_type }}",
+            "media_url": "={{ $json.media_url }}",
+            "media_mime_type": "={{ $json.media_mime_type }}",
+            "is_broadcast": "={{ $json.is_broadcast }}",
+            "participant": "={{ $json.participant }}",
+            "quoted_message": "={{ $json.quoted_message }}",
+            "evolution_api_url": "={{ $json.evolution_api_url }}",
+            "api_key": "={{ $json.api_key }}",
+            "message_id": "={{ $json.message_id }}",
+            "phone_number": "={{ $json.phone_number }}",
+            "is_text_message": "={{ $json.is_text_message }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -3296,
+        640
+      ],
+      "id": "49f47bfd-7207-4cf8-a816-3e8d07a0e5a2",
+      "name": "Execute: Transcribe Audio"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO corev4_message_dedup (\n  message_id,\n  whatsapp_id,\n  received_at,\n  processed\n) VALUES (\n  '={{ $('Execute: Normalize Evolution Data').item.json.message_id }}',\n  '={{ $('Execute: Normalize Evolution Data').item.json.whatsapp_id }}',\n  NOW(),\n  false\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2176,
+        784
+      ],
+      "id": "59b9dcb4-971b-417e-9763-099892b3408d",
+      "name": "Insert: Deduplication Record",
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "frank-webhook-v4",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3968,
+        704
+      ],
+      "id": "e1cfff13-c054-4d5a-b151-ef43d670161e",
+      "name": "Receive: WhatsApp Webhook",
+      "webhookId": "8b811073-1a50-4741-90a1-16fbea33afc3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "prep-1",
+              "name": "contact_id",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-2",
+              "name": "company_id",
+              "value": "={{ $('Enrich: Message Context').item.json.company_id }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-3",
+              "name": "opt_out",
+              "value": "={{ $('Enrich: Message Context').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-4",
+              "name": "contact_exists",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-5",
+              "name": "whatsapp_id",
+              "value": "={{ $('Enrich: Message Context').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-6",
+              "name": "contact_name",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-7",
+              "name": "message_content",
+              "value": "={{ $('Enrich: Message Context').item.json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-8",
+              "name": "message_type",
+              "value": "={{ $('Enrich: Message Context').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-9",
+              "name": "phone_number",
+              "value": "={{ $('Enrich: Message Context').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-10",
+              "name": "evolution_api_url",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-11",
+              "name": "evolution_instance",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-12",
+              "name": "origin_source",
+              "value": "={{ $('Enrich: Message Context').item.json.origin_source }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-13",
+              "name": "evolution_api_key",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8e713a71-d58e-4403-a75d-948cf5597270",
+      "name": "Prepare: Create Contact",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "prep-react-1",
+              "name": "contact_id",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "prep-react-2",
+              "name": "company_id",
+              "value": "={{ $('Enrich: Message Context').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "prep-react-3",
+              "name": "opt_out",
+              "value": "={{ $('Enrich: Message Context').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-4",
+              "name": "contact_exists",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-5",
+              "name": "whatsapp_id",
+              "value": "={{ $('Enrich: Message Context').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-6",
+              "name": "contact_name",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-7",
+              "name": "message_content",
+              "value": "={{ $('Enrich: Message Context').item.json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-8",
+              "name": "message_type",
+              "value": "={{ $('Enrich: Message Context').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-9",
+              "name": "phone_number",
+              "value": "={{ $('Enrich: Message Context').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-10",
+              "name": "evolution_api_url",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-11",
+              "name": "evolution_instance",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-12",
+              "name": "origin_source",
+              "value": "={{ $('Enrich: Message Context').item.json.origin_source }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-react-13",
+              "name": "evolution_api_key",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "044c9765-c14f-4019-bf95-ac509609280d",
+      "name": "Prepare: Reactivate",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "prep-cmd-1",
+              "name": "contact_id",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "prep-cmd-2",
+              "name": "company_id",
+              "value": "={{ $('Enrich: Message Context').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "prep-cmd-3",
+              "name": "opt_out",
+              "value": "={{ $('Enrich: Message Context').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-4",
+              "name": "contact_exists",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-5",
+              "name": "whatsapp_id",
+              "value": "={{ $('Enrich: Message Context').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-6",
+              "name": "contact_name",
+              "value": "={{ $('Enrich: Message Context').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-7",
+              "name": "message_content",
+              "value": "={{ $('Enrich: Message Context').item.json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-8",
+              "name": "message_type",
+              "value": "={{ $('Enrich: Message Context').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-9",
+              "name": "phone_number",
+              "value": "={{ $('Enrich: Message Context').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-10",
+              "name": "evolution_api_url",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-11",
+              "name": "evolution_instance",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-12",
+              "name": "origin_source",
+              "value": "={{ $('Enrich: Message Context').item.json.origin_source }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-cmd-13",
+              "name": "evolution_api_key",
+              "value": "={{ $('Enrich: Message Context').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1d4d46e2-7745-42c8-a999-6fd1eca82501",
+      "name": "Prepare: Process Command",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "DF0p6UjtkmqCOv2Y",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/DF0p6UjtkmqCOv2Y",
+          "cachedResultName": "Reactivate Blocked Contact | v4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $json.contact_id }}",
+            "company_id": "={{ $json.company_id }}",
+            "opt_out": "={{ $json.opt_out }}",
+            "contact_exists": "={{ $json.contact_exists }}",
+            "whatsapp_id": "={{ $json.whatsapp_id }}",
+            "contact_name": "={{ $json.contact_name }}",
+            "message_content": "={{ $json.message_content }}",
+            "message_type": "={{ $json.message_type }}",
+            "phone_number": "={{ $json.phone_number }}",
+            "evolution_api_url": "={{ $json.evolution_api_url }}",
+            "evolution_instance": "={{ $json.evolution_instance }}",
+            "origin_source": "={{ $json.origin_source }}",
+            "evolution_api_key": "={{ $json.evolution_api_key }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        624
+      ],
+      "id": "de6c4eed-8d1f-40da-9114-f6c8358531fb",
+      "name": "Execute: Reactivate Contact"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar o item do merge\nconst item = $input.first().json;\n\n// Determinar a source correta dos dados\nlet contactId, companyId, whatsappId, contactName, messageContent, messageType;\nlet phoneNumber, evolutionApiUrl, evolutionInstance, evolutionApiKey, originSource, optOut, messageId, pushName;\n\n// Se veio do Execute: Create Contact (tem success: true e contact_id)\nif (item.success && item.contact_id) {\n  const context = $('Enrich: Message Context').first().json;\n  \n  contactId = item.contact_id;\n  companyId = context.company_id;\n  whatsappId = context.whatsapp_id;\n  contactName = context.contact_name;\n  messageContent = context.message_content;\n  messageType = context.message_type;\n  phoneNumber = context.phone_number;\n  evolutionApiUrl = context.evolution_api_url;\n  evolutionInstance = context.evolution_instance;\n  evolutionApiKey = context.evolution_api_key;\n  originSource = context.origin_source;\n  optOut = false;\n  messageId = context.messageId;\n  pushName = context.pushName;\n}\n// Se veio do Execute: Reactivate\nelse if (item.contactId && item.message) {\n  const context = $('Enrich: Message Context').first().json;\n  \n  contactId = item.contactId;\n  companyId = context.company_id;\n  whatsappId = context.whatsapp_id;\n  contactName = context.contactName || context.contact_name;\n  messageContent = context.message_content;\n  messageType = context.message_type;\n  phoneNumber = context.phone_number;\n  evolutionApiUrl = context.evolution_api_url;\n  evolutionInstance = context.evolution_instance;\n  evolutionApiKey = context.evolution_api_key;\n  originSource = context.origin_source;\n  optOut = false;\n  messageId = context.messageId;\n  pushName = context.pushName;\n}\n// Se veio do Execute: Process Commands\nelse if (item.command_executed) {\n  const context = $('Enrich: Message Context').first().json;\n  \n  contactId = item.contact_id;\n  companyId = context.company_id;\n  whatsappId = context.whatsapp_id;\n  contactName = context.contact_name;\n  messageContent = context.message_content;\n  messageType = context.message_type;\n  phoneNumber = context.phone_number;\n  evolutionApiUrl = context.evolution_api_url;\n  evolutionInstance = context.evolution_instance;\n  evolutionApiKey = context.evolution_api_key;\n  originSource = context.origin_source;\n  optOut = item.opt_out || false;\n  messageId = context.messageId;\n  pushName = context.pushName;\n}\n// Se veio direto (active_chat)\nelse {\n  contactId = item.contact_id;\n  companyId = item.company_id;\n  whatsappId = item.whatsapp_id;\n  contactName = item.contact_name;\n  messageContent = item.message_content;\n  messageType = item.message_type;\n  phoneNumber = item.phone_number;\n  evolutionApiUrl = item.evolution_api_url;\n  evolutionInstance = item.evolution_instance;\n  evolutionApiKey = item.evolution_api_key;\n  originSource = item.origin_source;\n  optOut = item.opt_out;\n  messageId = item.messageId;\n  pushName = item.pushName;\n}\n\n// Pegar TODOS os dados de Enrich: Message Context (incluindo base64, media, etc)\nconst enrichContext = $('Enrich: Message Context').first().json;\nconst normalizeData = $('Execute: Normalize Evolution Data').first().json;\n\n// Pegar base64 corretamente\nconst base64Data = normalizeData?.body?.data?.message?.base64 || enrichContext?.body?.data?.message?.base64 || null;\n\nreturn [{\n  json: {\n    contact_id: contactId,\n    company_id: companyId,\n    whatsapp_id: whatsappId,\n    message_id: messageId, \n    contact_name: contactName,\n    message_content: messageContent,\n    message_type: messageType,\n    phone_number: phoneNumber,\n    evolution_api_url: evolutionApiUrl,\n    evolution_instance: evolutionInstance,\n    evolution_api_key: evolutionApiKey,\n    origin_source: originSource,\n    opt_out: optOut,\n    contact_exists: enrichContext.contact_exists,\n    quoted_message: enrichContext.quoted_message,\n    transcribed: enrichContext.transcribed,\n    has_media: enrichContext.has_media,\n    media_url: enrichContext.media_url,\n    media_mime_type: enrichContext.media_mime_type,\n    media_type: enrichContext.media_type,\n    caption: enrichContext.caption,\n    sender_type: normalizeData.sender_type,\n    'body.data.message.base64': base64Data\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        1024
+      ],
+      "id": "438b0843-3bd3-4753-a966-2d0daa9f84d8",
+      "name": "Prepare: Frank Chat"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute: Normalize Evolution Data": {
+      "main": [
+        [
+          {
+            "node": "Route: Audio Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Audio Messages": {
+      "main": [
+        [
+          {
+            "node": "Execute: Transcribe Audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge: Audio and Text",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge: Audio and Text": {
+      "main": [
+        [
+          {
+            "node": "Filter: Valid Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Valid Messages": {
+      "main": [
+        [
+          {
+            "node": "Query: Message Deduplication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query: Message Deduplication": {
+      "main": [
+        [
+          {
+            "node": "Route: Duplicate Detection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Duplicate Detection": {
+      "main": [
+        [
+          {
+            "node": "Respond: Webhook Acknowledgment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert: Deduplication Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond: Webhook Acknowledgment": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Contact Lookup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Contact Lookup": {
+      "main": [
+        [
+          {
+            "node": "Fetch: Contact Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch: Contact Record": {
+      "main": [
+        [
+          {
+            "node": "Enrich: Message Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich: Message Context": {
+      "main": [
+        [
+          {
+            "node": "Route: Contact Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Contact Status": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Create Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare: Reactivate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare: Process Command",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare: Frank Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute: Create Contact": {
+      "main": [
+        [
+          {
+            "node": "Merge: Workflow Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute: Process Commands": {
+      "main": [
+        [
+          {
+            "node": "Merge: Workflow Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge: Workflow Results": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Frank Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore: Frank Context": {
+      "main": [
+        [
+          {
+            "node": "Execute: Frank Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute: Transcribe Audio": {
+      "main": [
+        [
+          {
+            "node": "Merge: Audio and Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: Deduplication Record": {
+      "main": [
+        [
+          {
+            "node": "Respond: Webhook Acknowledgment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive: WhatsApp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Execute: Normalize Evolution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Create Contact": {
+      "main": [
+        [
+          {
+            "node": "Execute: Create Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Reactivate": {
+      "main": [
+        [
+          {
+            "node": "Execute: Reactivate Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Process Command": {
+      "main": [
+        [
+          {
+            "node": "Execute: Process Commands",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute: Reactivate Contact": {
+      "main": [
+        [
+          {
+            "node": "Merge: Workflow Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Prepare: Frank Chat": {
+      "main": [
+        [
+          {
+            "node": "Restore: Frank Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "53e6e7a9-70b2-4449-97cf-bc12cc03b8f7",
+  "meta": {
+    "instanceId": "5c6394fedb685d155bbe72063becfd91d616d8e123397941c9863e7b805328ae"
+  },
+  "id": "8Yip7wZKcGEYTgoo",
+  "tags": [
+    {
+      "createdAt": "2025-10-16T11:45:27.519Z",
+      "updatedAt": "2025-10-16T11:45:27.519Z",
+      "id": "eTCC1MPmHZOu7LAH",
+      "name": "corev4"
+    }
+  ]
+}

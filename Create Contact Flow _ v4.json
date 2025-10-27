@@ -1,0 +1,605 @@
+{
+  "name": "Create Contact Flow | v4",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15d9bbcd-3c8b-4dda-b6c1-4039033fa99c",
+              "name": "contact_id",
+              "value": "={{ $json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "166678b1-ec22-420d-98fa-b8ddc2051032",
+              "name": "company_id",
+              "value": "={{ $json.company_id }}",
+              "type": "string"
+            },
+            {
+              "id": "dce9009f-ff2d-4ff3-863c-23acc73f077e",
+              "name": "opt_out",
+              "value": "={{ $json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "2c2a9d47-5fd4-4aa6-a3ab-5f7bb1ea8ca9",
+              "name": "contact_exists",
+              "value": "={{ $json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "a76a6621-525d-4ccc-960a-b099b14f9ad7",
+              "name": "whatsapp_id",
+              "value": "={{ $json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "45aefe95-00b2-4380-b5ca-9a04ebc9b6df",
+              "name": "contact_name",
+              "value": "={{ $json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "b775ece2-5831-4a2c-adbb-78740f798d33",
+              "name": "message_content",
+              "value": "={{ $json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "a0a20a2e-eed7-4bf5-92dd-de902879ef08",
+              "name": "message_type",
+              "value": "={{ $json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "f292945c-e4a3-4883-896b-5225e45ab775",
+              "name": "phone_number",
+              "value": "={{ $json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "7dd698e7-6afa-466a-9da0-50fa21b246ee",
+              "name": "evolution_api_url",
+              "value": "={{ $json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "da07963b-43c1-4dc2-8cca-ccad9558f223",
+              "name": "evolution_instance",
+              "value": "={{ $json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "a0bf70f9-8aec-423e-828f-ccd27e1d34b0",
+              "name": "origin_source",
+              "value": "={{ $json.origin_source }}",
+              "type": "string"
+            },
+            {
+              "id": "121c8e18-bd82-43e6-a38c-c7789b5e1769",
+              "name": "evolution_api_key",
+              "value": "={{ $json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1e5afa8b-0591-4acd-a1b1-bcb6f3f44f5d",
+      "name": "Prepare: Contact Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1136,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "corev4_contacts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $json.company_id }}"
+            },
+            {
+              "fieldId": "full_name",
+              "fieldValue": "={{ $json.contact_name }}"
+            },
+            {
+              "fieldId": "whatsapp",
+              "fieldValue": "={{ $json.whatsapp_id }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $json.phone_number }}"
+            },
+            {
+              "fieldId": "opt_out",
+              "fieldValue": "={{ $json.opt_out }}"
+            }
+          ]
+        }
+      },
+      "id": "b9c597af-70e3-47ce-80ef-a7e749b0de9d",
+      "name": "Insert: Contact Record",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        256
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact_id",
+              "name": "contact_id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d34c6745-df36-4f68-ac63-2de79ab2c5f4",
+      "name": "Extract: Contact ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -688,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "corev4_lead_state",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $('Insert: Contact Record').item.json.id }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Prepare: Contact Data').item.json.company_id }}"
+            },
+            {
+              "fieldId": "qualification_stage",
+              "fieldValue": "pre"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "ativo"
+            },
+            {
+              "fieldId": "is_qualified",
+              "fieldValue": "={{ false }}"
+            }
+          ]
+        }
+      },
+      "id": "e8918c1f-26d3-4176-b431-8a7127be72e8",
+      "name": "Insert: Lead State Record",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        256
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "corev4_chat_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $('Insert: Contact Record').item.json.id }}"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "user"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $('Prepare: Contact Data').item.json.message_content }}"
+            },
+            {
+              "fieldId": "message_type",
+              "fieldValue": "={{ $('Prepare: Contact Data').item.json.message_type }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Prepare: Contact Data').item.json.company_id }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ 'contact_' + $('Insert: Contact Record').item.json.id + '_company_' + $('Prepare: Contact Data').item.json.company_id }}"
+            }
+          ]
+        }
+      },
+      "id": "2c47369a-7148-4f7e-b56b-202c769e4e72",
+      "name": "Insert: First Message Record",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        448
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "974bb95e-de1b-45f5-b2a0-e8cb3d371435",
+      "name": "Merge: Insert Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -240,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "success",
+              "name": "success",
+              "value": "=true",
+              "type": "boolean"
+            },
+            {
+              "id": "action",
+              "name": "action",
+              "value": "contact_created",
+              "type": "string"
+            },
+            {
+              "id": "contact_id_final",
+              "name": "contact_id",
+              "value": "={{ $('Insert: Contact Record').first().json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "ede7a151-1622-4e67-9bba-2d569139f6cd",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Contact Data').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "message",
+              "name": "message",
+              "value": "=Contato criado com sucesso",
+              "type": "string"
+            },
+            {
+              "id": "6f7e8358-e474-4561-b85f-a596a8d3add9",
+              "name": "audio_response",
+              "value": "={{ $json.audio_response }}",
+              "type": "boolean"
+            },
+            {
+              "id": "63d965ad-86df-4e39-93d1-adc55c1bf9c9",
+              "name": "text_response",
+              "value": "={{ $json.text_response }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a25e47d1-bf8b-4ea2-9e36-8e965abc2340",
+              "name": "interactions",
+              "value": "={{ $json.interactions }}",
+              "type": "number"
+            },
+            {
+              "id": "7898bed4-75f9-4a20-a0d0-bb62ad071a2e",
+              "name": "last_interaction_at",
+              "value": "={{ $json.last_interaction_at }}",
+              "type": "string"
+            },
+            {
+              "id": "cca394a1-3cc1-4396-bceb-a776b14fef58",
+              "name": "evolution_api_contact",
+              "value": "={{ $json.evolution_api_contact }}",
+              "type": "string"
+            },
+            {
+              "id": "6ed763e5-772c-4ec3-b9d0-e5c7cd928ad2",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "31fa676f-f914-4664-bdb8-2f51322268a2",
+              "name": "updated_at",
+              "value": "={{ $json.updated_at }}",
+              "type": "string"
+            },
+            {
+              "id": "2ed71d95-5ca5-42b4-afd9-dd545093d837",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Contact Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "3651d605-08ce-46fb-9f17-1c8f1d4edd06",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Contact Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "68a9edff-1912-4813-a46e-afb840435ac8",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Contact Data').item.json.evolution_api_key }}",
+              "type": "string"
+            },
+            {
+              "id": "2fbfac4b-460b-44b9-a525-eca68a7f3bf5",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Contact Data').item.json.phone_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7aab27c1-eab0-4b85-8faa-81cbec8f1531",
+      "name": "Format Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "corev4_contact_extras",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $json.contact_id }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Prepare: Contact Data').item.json.company_id }}"
+            },
+            {
+              "fieldId": "pipeline_id",
+              "fieldValue": "={{ null }}"
+            },
+            {
+              "fieldId": "audio_response",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "text_response",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "interactions",
+              "fieldValue": "1"
+            },
+            {
+              "fieldId": "last_interaction_at",
+              "fieldValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        64
+      ],
+      "id": "a9a5b586-4aea-42d4-8583-9909cf10bc7a",
+      "name": "Insert: Contact Extra Data",
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "8Sfia6n3SqQIqjpd",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/8Sfia6n3SqQIqjpd",
+          "cachedResultName": "Create Contact & Followup Campaign | v4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        256
+      ],
+      "id": "45bf2ba9-fd01-4f8d-8e1d-22dde2869971",
+      "name": "Execute: Create Followup Campaign"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1360,
+        256
+      ],
+      "id": "88abae9a-73c9-4128-915e-80a7c8da290b",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Prepare: Contact Data": {
+      "main": [
+        [
+          {
+            "node": "Insert: Contact Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: Contact Record": {
+      "main": [
+        [
+          {
+            "node": "Extract: Contact ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract: Contact ID": {
+      "main": [
+        [
+          {
+            "node": "Insert: Lead State Record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert: First Message Record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert: Contact Extra Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: Lead State Record": {
+      "main": [
+        [
+          {
+            "node": "Merge: Insert Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge: Insert Results": {
+      "main": [
+        [
+          {
+            "node": "Execute: Create Followup Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: First Message Record": {
+      "main": [
+        [
+          {
+            "node": "Merge: Insert Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Insert: Contact Extra Data": {
+      "main": [
+        [
+          {
+            "node": "Merge: Insert Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute: Create Followup Campaign": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Contact Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c3dad8c1-3d51-4574-bb11-ed923c81e57e",
+  "meta": {
+    "instanceId": "5c6394fedb685d155bbe72063becfd91d616d8e123397941c9863e7b805328ae"
+  },
+  "id": "FkBpLfoPH1oHhWGa",
+  "tags": [
+    {
+      "createdAt": "2025-10-16T11:45:27.519Z",
+      "updatedAt": "2025-10-16T11:45:27.519Z",
+      "id": "eTCC1MPmHZOu7LAH",
+      "name": "corev4"
+    }
+  ]
+}

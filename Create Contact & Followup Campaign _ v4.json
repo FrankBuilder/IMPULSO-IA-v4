@@ -1,0 +1,386 @@
+{
+  "name": "Create Contact & Followup Campaign | v4",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "94104317-c772-4bbe-9f66-57ecbdf7cd13",
+      "name": "Loop Over Steps",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        384,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "contact_id",
+              "value": "={{ $json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "2",
+              "name": "company_id",
+              "value": "={{ $json.company_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "10335315-139e-4ca4-820b-24d00e218c94",
+      "name": "Prepare: Campaign Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -736,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "campaign_id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "2",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Campaign Data').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "3",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Campaign Data').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "4",
+              "name": "total_steps",
+              "value": "={{ $('Fetch: Company Config').first().json.total_steps }}",
+              "type": "number"
+            },
+            {
+              "id": "5",
+              "name": "timing_pattern",
+              "value": "={{ $('Fetch: Company Config').first().json.timing_pattern }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cf29e651-096a-4177-b3f4-1abc61367d2c",
+      "name": "Extract: Campaign ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst contact_id = $input.first().json.contact_id;\nconst company_id = $input.first().json.company_id;\nconst total_steps = $input.first().json.total_steps;\nconst timing_pattern = $input.first().json.timing_pattern;\n\nconst defaultTiming = [1, 25, 73, 145, 313];\n\nconst followups = [];\nfor (let step = 1; step <= total_steps; step++) {\n  const hours = timing_pattern?.[`step_${step}`] || defaultTiming[step - 1] || (step * 24);\n  \n  followups.push({\n    json: {\n      contact_id: contact_id,\n      company_id: company_id,\n      step: step,\n      scheduled_at: new Date(now.getTime() + hours * 60 * 60 * 1000).toISOString()\n    }\n  });\n}\n\nreturn followups;"
+      },
+      "id": "449e3f3c-d9df-4f93-ae9d-6549da90a86b",
+      "name": "Create: Followup Steps",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  id as config_id,\n  total_steps\nFROM corev4_followup_configs\nWHERE company_id = {{ $('Prepare: Campaign Data').item.json.company_id }}\n  AND is_active = true\nORDER BY created_at DESC\nLIMIT 1;",
+        "options": {}
+      },
+      "id": "4a5dc4a1-b1bf-4cfb-8141-33ae1f907b64",
+      "name": "Fetch: Company Config",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -512,
+        320
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "id": "fd78aed8-071c-4174-816e-548e72b9bf70",
+      "name": "Receive: Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "corev4_followup_campaigns",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $('Prepare: Campaign Data').item.json.contact_id }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Prepare: Campaign Data').item.json.company_id }}"
+            },
+            {
+              "fieldId": "config_id",
+              "fieldValue": "={{ $('Fetch: Company Config').first().json.config_id }}"
+            },
+            {
+              "fieldId": "total_steps",
+              "fieldValue": "={{ $('Fetch: Company Config').first().json.total_steps }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "active"
+            },
+            {
+              "fieldId": "should_continue",
+              "fieldValue": "true"
+            }
+          ]
+        }
+      },
+      "id": "89e7afd1-f84c-4fd9-b5e7-0d4064e951a8",
+      "name": "Insert: Campaign Record",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        320
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "corev4_followup_executions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "campaign_id",
+              "fieldValue": "={{ $('Extract: Campaign ID').item.json.campaign_id }}"
+            },
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $('Loop Over Steps').item.json.contact_id }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Loop Over Steps').item.json.company_id }}"
+            },
+            {
+              "fieldId": "step",
+              "fieldValue": "={{ $('Loop Over Steps').item.json.step }}"
+            },
+            {
+              "fieldId": "total_steps",
+              "fieldValue": "={{ $('Extract: Campaign ID').item.json.total_steps }}"
+            },
+            {
+              "fieldId": "scheduled_at",
+              "fieldValue": "={{ $('Loop Over Steps').item.json.scheduled_at }}"
+            }
+          ]
+        }
+      },
+      "id": "ca7cf5c1-8c7e-4383-8c68-3356bd1dbddd",
+      "name": "Insert: Execution Record",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        608,
+        224
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "2",
+              "name": "campaign_id",
+              "value": "={{ $('Extract: Campaign ID').item.json.campaign_id }}",
+              "type": "number"
+            },
+            {
+              "id": "3",
+              "name": "total_steps_created",
+              "value": "={{ $('Extract: Campaign ID').item.json.total_steps }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f84d0fed-5afc-456c-95eb-c47280d2f186",
+      "name": "Format: Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        416
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Loop Over Steps": {
+      "main": [
+        [
+          {
+            "node": "Format: Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert: Execution Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Campaign Data": {
+      "main": [
+        [
+          {
+            "node": "Fetch: Company Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract: Campaign ID": {
+      "main": [
+        [
+          {
+            "node": "Create: Followup Steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create: Followup Steps": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch: Company Config": {
+      "main": [
+        [
+          {
+            "node": "Insert: Campaign Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive: Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Campaign Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: Campaign Record": {
+      "main": [
+        [
+          {
+            "node": "Extract: Campaign ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: Execution Record": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "78c688cf-06e3-4bca-8380-571758e1ee20",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5c6394fedb685d155bbe72063becfd91d616d8e123397941c9863e7b805328ae"
+  },
+  "id": "8Sfia6n3SqQIqjpd",
+  "tags": [
+    {
+      "createdAt": "2025-10-16T11:45:27.519Z",
+      "updatedAt": "2025-10-16T11:45:27.519Z",
+      "id": "eTCC1MPmHZOu7LAH",
+      "name": "corev4"
+    }
+  ]
+}

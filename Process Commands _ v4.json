@@ -1,0 +1,1757 @@
+{
+  "name": "Process Commands | v4",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Apenas histórico de conversas\nDELETE FROM corev4_chat_history WHERE contact_id = {{ $json.contact_id }};\nDELETE FROM corev4_n8n_chat_histories WHERE session_id LIKE '%_id_{{ $json.contact_id }}';",
+        "options": {}
+      },
+      "id": "a5bfc7b7-a403-4e1a-9f5b-4ec31dd71095",
+      "name": "Clear: Chat History",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -832,
+        -336
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-1",
+              "name": "message",
+              "value": "={{ \"✅ Pronto! Limpei todo o histórico da nossa conversa. 🧹\\n\\nAgora começamos do zero! Pode me fazer sua pergunta. 😊\" }}",
+              "type": "string"
+            },
+            {
+              "id": "msg-2",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "msg-3",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "msg-4",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f0266ca4-7973-4ccc-8688-8405182f8407",
+      "name": "Message: Limpar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-list",
+              "name": "message",
+              "value": "={{ \"📋 *Lista de Comandos Disponíveis:*\\n\\n🔹 *#listar* - Mostra esta lista de comandos\\n🔹 *#limpar* - Apaga o histórico da conversa\\n🔹 *#audio* - Ativa respostas em áudio\\n🔹 *#texto* - Ativa respostas apenas em texto\\n🔹 *#padrao* - Volta ao formato padrão\\n🔹 *#sair* - Cancela e bloqueia o atendimento\\n\\nÉ só digitar o comando que eu executo! 😊\" }}",
+              "type": "string"
+            },
+            {
+              "id": "4df87b72-28cc-4668-9de8-3e5c56dd0301",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "164fc413-fb45-4fa9-9140-2250caf61bad",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Command Data').item.json.company_id }}",
+              "type": "string"
+            },
+            {
+              "id": "54258339-6da2-40f9-8feb-ee43b9b4e113",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Command Data').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "da19cb3a-7545-481e-adae-b610e6075384",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "eb3e885b-2769-405d-bf4e-c072734e097a",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "03b520a4-7164-45e8-bae5-aff69a523656",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "14d5c53e-c332-49ac-89b0-ba2d10dfd009",
+              "name": "message_content",
+              "value": "={{ $('Prepare: Command Data').item.json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "a00a4131-703f-4069-bd2f-10428ae0e840",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Command Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "1193781f-6ee6-4040-a157-d07be53f32f8",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "881e5102-adb3-4a6a-887a-130d92d8ae47",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "048950a9-54ac-4220-b14d-a205005316a8",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "78e9c91f-bd27-426b-9267-6ae71e4fd758",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b22b40b5-92fd-4916-a4cb-b7bf82ea3a03",
+      "name": "Message: Listar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "corev4_contact_extras",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contact_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare: Command Data').item.json.contact_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "audio_response",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "text_response",
+              "fieldValue": "false"
+            }
+          ]
+        }
+      },
+      "id": "14572780-beb1-4d87-9db7-a5ff16ea26af",
+      "name": "Set Audio Preference",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        48
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-audio",
+              "name": "message",
+              "value": "={{ \"✅ Você ativou respostas em *áudio*! 🎧\\n\\nAgora vou enviar todas as respostas em formato de áudio.\\n\\nSe quiser voltar ao modo padrão, é só usar o comando *#padrao*. 😉\" }}",
+              "type": "string"
+            },
+            {
+              "id": "e73d977e-742b-41c3-8e2f-8a3a2a22058e",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "46e8460d-4783-415d-ab10-61d6ee4da222",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Command Data').item.json.company_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a7c2f566-77e9-4a66-a63e-8f842d6a31d0",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Command Data').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "0fb2b7ac-bb67-4a53-b622-f723b3ff56f7",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "c2ec0435-220e-440f-ab83-63d09ae9dd85",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "966241a5-fc1f-4efc-a69c-09167d5ec750",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "d0d10880-62ae-49fa-9172-89bd96d0dcbd",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "7cc3e563-7bb3-4225-ae86-a44c612fe6ef",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Command Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "eefa3afc-8644-46e0-987d-2ba7a0acd2c1",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "914f2532-0bae-4715-933f-4bc7c4d1677a",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "fa700170-2a52-48bb-a7f1-86a2a7ab1e1b",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "583519b5-9cd3-474d-9e0a-8b82920c183c",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "350c2d68-b9aa-4c45-81b9-4521bdf15beb",
+      "name": "Message: Audio",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-text",
+              "name": "message",
+              "value": "={{ \"✅ Respostas em *texto* ativadas! 📝\\n\\nAgora vou enviar todas as minhas respostas apenas em formato de texto.\\n\\nSe quiser respostas em áudio, use o comando *#audio*. 😊\" }}",
+              "type": "string"
+            },
+            {
+              "id": "196fc940-1ccd-4be8-b27b-caff55b01af0",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "12386e1f-0fe9-4032-9269-d6f1faa5ceb2",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Command Data').item.json.company_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fd44cffe-58d2-4e37-9539-5a0157f611f2",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Command Data').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "b1cebe7d-729c-4f1c-8a33-6419c6c8c3c9",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "809df011-4e18-4a32-97d1-d598c192d070",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5f8653bf-c459-4989-9d38-9ff768080fe6",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "37ab5d3f-e638-4174-abda-a39bc27a9030",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "71817301-9c0b-4235-ac0e-7ae1233b98ef",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Command Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "ca87dbd8-accd-4b9b-8cec-fac6ed4f7768",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "e0d3d8a0-58f7-4488-986e-01f76dfac851",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "a843fcb8-18b2-4a53-b488-aeb15e214ed5",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "6daa3b0c-f527-4194-9e44-459225416278",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "98e9b758-adbf-4220-abe9-b0f7d8337e54",
+      "name": "Message: Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-default",
+              "name": "message",
+              "value": "={{ \"✅ Formato padrão ativado! 📱\\n\\nAgora eu vou responder no formato padrão do sistema.\\n\\nUse *#audio* para áudio ou *#texto* para texto. 😊\" }}",
+              "type": "string"
+            },
+            {
+              "id": "f90df918-9808-4c6a-8ae8-530405c3b881",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6d53ac33-f730-464c-b913-d96e1149f12d",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Command Data').item.json.company_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f6d06853-fb93-4fcc-91f5-c89f1bab5caf",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Command Data').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "b4d19d9e-f6bc-49f2-bc0e-c32a730003ef",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "bbbc1440-39aa-4e66-a962-9c91b03db902",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "41740916-5fee-449c-891b-8cc1c63546f9",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "d9b45031-d7c6-45cb-b80a-e4b3cf629b9e",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "f323b7d5-e9eb-42c4-8d26-0a0a28df22c5",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Command Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "a84e2a67-ed02-4f95-9049-fd2b2410dfeb",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "702732a2-53b7-4815-9f5f-cffb60f9e094",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "18091a0f-f513-4d93-b6c3-0f71a435ea0d",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "518647ea-4189-4fc8-bed2-cdc1c6f71838",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9b6232b9-6db8-485a-b948-c0f2d0e9a774",
+      "name": "Message: Default",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "corev4_contacts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare: Command Data').item.json.contact_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "opt_out",
+              "fieldValue": "true"
+            }
+          ]
+        }
+      },
+      "id": "e20d8bd5-2e39-4047-9b1f-c9d617def068",
+      "name": "Set Opt-Out",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        624
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 7
+      },
+      "id": "09014e0e-61c0-4197-8222-2e3de4aab95d",
+      "name": "Merge: All Command Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -384,
+        160
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- 1. Deletar AI decisions (via followup_executions)\nDELETE FROM corev4_ai_decisions \nWHERE followup_execution_id IN (\n    SELECT id FROM corev4_followup_executions WHERE contact_id = {{ $json.contact_id }}\n);\n\n-- 2. Deletar followup executions\nDELETE FROM corev4_followup_executions \nWHERE contact_id = {{ $json.contact_id }};\n\n-- 3. Deletar followup campaigns (CRÍTICO - ESTAVA FALTANDO!)\nDELETE FROM corev4_followup_campaigns \nWHERE contact_id = {{ $json.contact_id }};\n\n-- 4. Deletar histórico e dados relacionados\nDELETE FROM corev4_chat_history \nWHERE contact_id = {{ $json.contact_id }};\n\nDELETE FROM corev4_n8n_chat_histories \nWHERE session_id LIKE '%_id_{{ $json.contact_id }}';\n\nDELETE FROM corev4_anum_history \nWHERE contact_id = {{ $json.contact_id }};\n\nDELETE FROM corev4_followup_stage_history \nWHERE contact_id = {{ $json.contact_id }};\n\nDELETE FROM corev4_chats \nWHERE contact_id = {{ $json.contact_id }};\n\nDELETE FROM corev4_lead_state \nWHERE contact_id = {{ $json.contact_id }};\n\nDELETE FROM corev4_contact_extras \nWHERE contact_id = {{ $json.contact_id }};\n\nDELETE FROM corev4_execution_logs \nWHERE contact_id = {{ $json.contact_id }};\n\n-- 5. Deletar o contato por último\nDELETE FROM corev4_contacts \nWHERE id = {{ $json.contact_id }};",
+        "options": {}
+      },
+      "id": "eddfa26e-81b2-48c8-b3ff-7f4a53c0f2c3",
+      "name": "Delete: Full Chat History",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -832,
+        1008
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "HCvX4Ypw2MiRDsdm",
+          "name": "Postgres Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-1",
+              "name": "=message",
+              "value": "={{ \"🔧 *RESET COMPLETO EXECUTADO*\\n\\n✅ Contato deletado\\n✅ Histórico apagado\\n✅ Qualificação resetada\\n✅ Preferências removidas\\n\\nNa próxima mensagem, você será tratado como *NOVO CONTATO*.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "c439eab7-dd76-4e3e-8c40-3480fa0c8a7b",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "3c4b8dba-a245-42a4-9ade-94f648078b26",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Command Data').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "a2ac449d-b7e6-4987-afc0-aa9880af7cb9",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Command Data').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "ce0c77c2-9d92-448a-aef0-f9ebe4d3a971",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "ea449c6f-3402-4d60-8bf6-1ce4c250c871",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "feae19c9-d305-466b-b72d-753bcfd97738",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "4f0b4a37-9674-4a04-9e3f-4283c6db1d8d",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "ea0bf9b8-60b4-44e5-99a4-976c5b92f593",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Command Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "b303008b-01df-423b-90d2-ca212a2b2eee",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "3dcf2d56-ad77-4ba1-8171-2b8b264d40ad",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "c429dc78-c5d4-4f4e-b5df-deb5d3dc3c45",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "3313244a-f716-4b35-ace7-c9311a5b036a",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3e7fdad-8af9-4f48-9e52-bfb852f9f653",
+      "name": "Message: Zerar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "corev4_contact_extras",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contact_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare: Command Data').item.json.contact_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "audio_response",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "text_response",
+              "fieldValue": "true"
+            }
+          ]
+        }
+      },
+      "id": "e14e8e38-f750-4dea-9b72-5a124ad8f6f7",
+      "name": "Set Text Preference",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        240
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "corev4_contact_extras",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contact_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare: Command Data').item.json.contact_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "audio_response",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "text_response",
+              "fieldValue": "true"
+            }
+          ]
+        }
+      },
+      "id": "78608409-eda7-4e4e-95cd-b76f0f3c0655",
+      "name": "Set Default Preference",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        432
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-sair",
+              "name": "message",
+              "value": "={{ \"❌ Comando não reconhecido.\\n\\nUse *#listar* para ver os comandos disponíveis.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "76565299-28ef-4e86-9a72-b3637f0eec83",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "0defd7ef-1034-4540-bb0f-63272fe72504",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Command Data').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "9acfa2ce-f5c0-46f1-85e0-a1ff67d33de2",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Command Data').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "5909e613-380a-4292-81da-835aa688c2f2",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "137f83e8-6ede-40a7-a379-b04e55f67a54",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f8dbe395-be17-4ec8-8197-b32b0b5d8a7d",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "cd57a935-51a2-4308-88e6-9803850fbc02",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "a8740171-b05c-4f44-9b19-63be1af88b82",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Command Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "cb8628d1-6e33-4bd7-b021-7c8addc338e5",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "eaab9e10-34a5-43e9-ac7b-e2b758c4669d",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "7dcd8e77-e931-4284-90e3-f4d1aa0fb4e4",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "b8ae287c-dbdb-4a47-8585-6fd3cf69ba52",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "72dd9630-1680-40f9-8edd-6fd06e50063b",
+      "name": "Message: Opt-Out ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-sair",
+              "name": "message",
+              "value": "={{ \"👋 *Entendido!*\\n\\nVocê não receberá mais mensagens da CoreConnect AI.\\n\\nSe mudar de ideia, é só me chamar novamente. Foi um prazer conversar!\" }}",
+              "type": "string"
+            },
+            {
+              "id": "76565299-28ef-4e86-9a72-b3637f0eec83",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "0defd7ef-1034-4540-bb0f-63272fe72504",
+              "name": "company_id",
+              "value": "={{ $('Prepare: Command Data').item.json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "9acfa2ce-f5c0-46f1-85e0-a1ff67d33de2",
+              "name": "opt_out",
+              "value": "={{ $('Prepare: Command Data').item.json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "5909e613-380a-4292-81da-835aa688c2f2",
+              "name": "contact_exists",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "137f83e8-6ede-40a7-a379-b04e55f67a54",
+              "name": "whatsapp_id",
+              "value": "={{ $('Prepare: Command Data').item.json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f8dbe395-be17-4ec8-8197-b32b0b5d8a7d",
+              "name": "contact_name",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "cd57a935-51a2-4308-88e6-9803850fbc02",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "a8740171-b05c-4f44-9b19-63be1af88b82",
+              "name": "message_type",
+              "value": "={{ $('Prepare: Command Data').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "cb8628d1-6e33-4bd7-b021-7c8addc338e5",
+              "name": "phone_number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "eaab9e10-34a5-43e9-ac7b-e2b758c4669d",
+              "name": "evolution_api_url",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "7dcd8e77-e931-4284-90e3-f4d1aa0fb4e4",
+              "name": "evolution_instance",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "b8ae287c-dbdb-4a47-8585-6fd3cf69ba52",
+              "name": "evolution_api_key",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "62e2fab1-3a55-42a9-b19f-cc19c363c91d",
+      "name": "Message: Unknown",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1504,
+        296
+      ],
+      "id": "58cb67ac-3905-4b7b-b6ba-b4e748b7261a",
+      "name": "Receive: Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8f3485a-ab48-44fa-a502-01d51103aaca",
+              "name": "contact_id",
+              "value": "={{ $json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "98b1eecb-176c-412c-93f6-33309179c30f",
+              "name": "company_id",
+              "value": "={{ $json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "5eda2b82-15e5-49fb-bd54-8bf2f7ef0554",
+              "name": "opt_out",
+              "value": "={{ $json.opt_out }}",
+              "type": "string"
+            },
+            {
+              "id": "8821e1ff-2663-4b15-8777-5cf20ee95aa4",
+              "name": "contact_exists",
+              "value": "={{ $json.contact_exists }}",
+              "type": "string"
+            },
+            {
+              "id": "336e29a4-d647-4290-8a6c-5e8ae82a19fa",
+              "name": "whatsapp_id",
+              "value": "={{ $json.whatsapp_id }}",
+              "type": "string"
+            },
+            {
+              "id": "436ff55d-d512-45e6-bfcb-7121c7707adc",
+              "name": "contact_name",
+              "value": "={{ $json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "517c920a-e63d-4316-8caa-5147d1e199a1",
+              "name": "command",
+              "value": "={{ $json.message_content }}",
+              "type": "string"
+            },
+            {
+              "id": "b535ee86-5fa2-4b27-bb09-a9f365ca2d4f",
+              "name": "message_type",
+              "value": "={{ $json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "f1eea129-cb45-45c2-8eb2-76f54c7e7139",
+              "name": "phone_number",
+              "value": "={{ $json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "f7847a5a-6970-45e6-912d-f376eadfe3ad",
+              "name": "evolution_api_url",
+              "value": "={{ $json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "0336be53-fb10-4801-bff3-5da69e7d9c09",
+              "name": "evolution_instance",
+              "value": "={{ $json.evolution_instance }}",
+              "type": "string"
+            },
+            {
+              "id": "340aa43c-c635-4031-a063-c4674a6d1813",
+              "name": "origin_source",
+              "value": "={{ $json.origin_source }}",
+              "type": "string"
+            },
+            {
+              "id": "33dc02ec-edb2-4e4b-b9b4-35683231d251",
+              "name": "evolution_api_key",
+              "value": "={{ $json.evolution_api_key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4fa59e2d-444e-4d2a-8b78-b23df1e1f3e6",
+      "name": "Prepare: Command Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1280,
+        296
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "#limpar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f4e48ef3-4a54-469d-b77b-4d93286b59c9"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "#limpar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f40bc2c6-552a-4e7e-9f6f-e4765ed7b359",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "#listar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "#listar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6cdf22c8-2bf4-48e7-a930-3dcd89b415fe",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "#audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "#audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "548796e5-4357-41fd-b205-4d2dd3448b16",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "#texto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "#texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "898df704-6444-49cf-b4e5-38c96b332df1",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "#padrao",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "#padrao"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a497b15a-b26d-4809-8437-515979ee4e2d",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "#sair",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "#sair"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5d7456ac-ac82-45e8-8f53-d795ceffa720",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "#zerar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "#zerar"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1056,
+        200
+      ],
+      "id": "d1b87dd5-4c03-4767-a982-9f6c5f1f6964",
+      "name": "Route: Commands"
+    },
+    {
+      "parameters": {
+        "tableId": "corev4_chat_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $('Prepare: Command Data').item.json.session_id }}"
+            },
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $('Prepare: Command Data').item.json.contact_id }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Prepare: Command Data').item.json.company_id }}"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "assistant"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $('Merge All Responses').item.json.message }}"
+            },
+            {
+              "fieldId": "message_type",
+              "fieldValue": "command_response"
+            }
+          ]
+        }
+      },
+      "id": "9801b8cb-40a1-4a52-b4c3-46377ac0e53f",
+      "name": "Save: Command Response",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        64,
+        240
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "output-1",
+              "name": "success",
+              "value": "=true",
+              "type": "boolean"
+            },
+            {
+              "id": "output-2",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "output-3",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "output-4",
+              "name": "message",
+              "value": "Command processed successfully",
+              "type": "string"
+            },
+            {
+              "id": "output-5",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "79201edf-0423-4dcd-9bfc-e25f29146155",
+      "name": "Format: Command Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "output-1",
+              "name": "success",
+              "value": "=true",
+              "type": "boolean"
+            },
+            {
+              "id": "output-2",
+              "name": "command",
+              "value": "={{ $('Prepare: Command Data').item.json.command }}",
+              "type": "string"
+            },
+            {
+              "id": "output-3",
+              "name": "contact_id",
+              "value": "={{ $('Prepare: Command Data').item.json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "output-4",
+              "name": "message",
+              "value": "Command processed successfully",
+              "type": "string"
+            },
+            {
+              "id": "output-5",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4d98c676-b355-4bc3-8994-4c6e1dd3e26e",
+      "name": "Format: Zerar Command Output ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}/message/sendText/{{ $('Prepare: Command Data').item.json.evolution_instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e656918-af78-475c-8640-db236a099cd3",
+      "name": "Send: WhatsApp Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Prepare: Command Data').item.json.evolution_api_url }}/message/sendText/{{ $('Prepare: Command Data').item.json.evolution_instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "={{ $('Prepare: Command Data').item.json.evolution_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Prepare: Command Data').item.json.phone_number }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e28e2468-3417-46c5-817e-8276279b477b",
+      "name": "Send: WhatsApp Message Comando #Zerar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1008
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Clear: Chat History": {
+      "main": [
+        [
+          {
+            "node": "Message: Limpar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message: Limpar": {
+      "main": [
+        [
+          {
+            "node": "Merge: All Command Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Message: Listar": {
+      "main": [
+        [
+          {
+            "node": "Merge: All Command Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Audio Preference": {
+      "main": [
+        [
+          {
+            "node": "Message: Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Opt-Out": {
+      "main": [
+        [
+          {
+            "node": "Message: Opt-Out ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge: All Command Responses": {
+      "main": [
+        [
+          {
+            "node": "Send: WhatsApp Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete: Full Chat History": {
+      "main": [
+        [
+          {
+            "node": "Message: Zerar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message: Zerar": {
+      "main": [
+        [
+          {
+            "node": "Send: WhatsApp Message Comando #Zerar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message: Audio": {
+      "main": [
+        [
+          {
+            "node": "Merge: All Command Responses",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Message: Text": {
+      "main": [
+        [
+          {
+            "node": "Merge: All Command Responses",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Message: Default": {
+      "main": [
+        [
+          {
+            "node": "Merge: All Command Responses",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Set Text Preference": {
+      "main": [
+        [
+          {
+            "node": "Message: Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Default Preference": {
+      "main": [
+        [
+          {
+            "node": "Message: Default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message: Opt-Out ": {
+      "main": [
+        [
+          {
+            "node": "Merge: All Command Responses",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Message: Unknown": {
+      "main": [
+        [
+          {
+            "node": "Merge: All Command Responses",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Receive: Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Command Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Command Data": {
+      "main": [
+        [
+          {
+            "node": "Route: Commands",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Commands": {
+      "main": [
+        [
+          {
+            "node": "Clear: Chat History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message: Listar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Audio Preference",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Text Preference",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Default Preference",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Opt-Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete: Full Chat History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message: Unknown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save: Command Response": {
+      "main": [
+        [
+          {
+            "node": "Format: Command Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send: WhatsApp Message": {
+      "main": [
+        [
+          {
+            "node": "Save: Command Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send: WhatsApp Message Comando #Zerar": {
+      "main": [
+        [
+          {
+            "node": "Format: Zerar Command Output ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cae8e0b9-c063-40be-9f86-4416183586df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5c6394fedb685d155bbe72063becfd91d616d8e123397941c9863e7b805328ae"
+  },
+  "id": "JveEQlvxC8lIx2pU",
+  "tags": [
+    {
+      "createdAt": "2025-10-16T11:45:27.519Z",
+      "updatedAt": "2025-10-16T11:45:27.519Z",
+      "id": "eTCC1MPmHZOu7LAH",
+      "name": "corev4"
+    }
+  ]
+}

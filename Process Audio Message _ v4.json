@@ -1,0 +1,318 @@
+{
+  "name": "Process Audio Message | v4",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.evolution_api_url }}/chat/getBase64FromMediaMessage/{{ $json.evolution_instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "={{ $json.api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message.key.id",
+              "value": "={{ $json.message_id }}"
+            },
+            {
+              "name": "convertToMp4",
+              "value": false
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "de74ab04-1cc4-4d14-aa71-b360a09cca48",
+      "name": "Fetch: Audio Base64",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -912,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-transcription-success",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2038690e-eee1-4f7c-8c40-4d37397ff7d4",
+      "name": "Check: Transcription Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "fileName": "audio.ogg"
+        }
+      },
+      "id": "c8f4a87d-789e-4029-aa21-559569c3aac7",
+      "name": "Convert: Base64 to Binary",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -688,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1136,
+        224
+      ],
+      "id": "78e4ff70-f78a-49ae-8ee2-357344d61b17",
+      "name": "Receive: Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "transcribed-text",
+              "name": "message_content",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "transcribed-flag",
+              "name": "transcribed",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "original-type",
+              "name": "original_message_type",
+              "value": "audioMessage",
+              "type": "string"
+            },
+            {
+              "id": "new-type",
+              "name": "message_type",
+              "value": "conversation",
+              "type": "string"
+            },
+            {
+              "id": "transcription-service",
+              "name": "transcription_service",
+              "value": "OpenAI Whisper",
+              "type": "string"
+            },
+            {
+              "id": "original-message-id",
+              "name": "message_id",
+              "value": "={{ $('Receive: Workflow Trigger').item.json.message_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1d839a07-bcc0-46f9-955a-7b167dd82b2f",
+      "name": "Format: Success Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "error-message",
+              "name": "message_content",
+              "value": "[Áudio não pôde ser transcrito - erro no processamento]",
+              "type": "string"
+            },
+            {
+              "id": "transcribed-false",
+              "name": "transcribed",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "error-flag",
+              "name": "transcription_error",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "error-details",
+              "name": "error_details",
+              "value": "={{ $json.error || 'Unknown transcription error' }}",
+              "type": "string"
+            },
+            {
+              "id": "original-type-error",
+              "name": "original_message_type",
+              "value": "audioMessage",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d54ab127-9846-4d40-8075-836723827706",
+      "name": "Format: Error Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "pt",
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -464,
+        224
+      ],
+      "id": "cafb9314-fbf0-44c0-860d-94031d54d53f",
+      "name": "Transcribe: Audio (Whisper)",
+      "credentials": {
+        "openAiApi": {
+          "id": "qG3pb1apvREZV7Pl",
+          "name": "OpenAI | CORE ONE™ - FRANK | AUDIO"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch: Audio Base64": {
+      "main": [
+        [
+          {
+            "node": "Convert: Base64 to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Transcription Success": {
+      "main": [
+        [
+          {
+            "node": "Format: Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format: Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert: Base64 to Binary": {
+      "main": [
+        [
+          {
+            "node": "Transcribe: Audio (Whisper)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive: Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch: Audio Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe: Audio (Whisper)": {
+      "main": [
+        [
+          {
+            "node": "Check: Transcription Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1318a4aa-2913-4995-9982-d52d8cafa41d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5c6394fedb685d155bbe72063becfd91d616d8e123397941c9863e7b805328ae"
+  },
+  "id": "v6ujbeRaSjlJb6Jd",
+  "tags": [
+    {
+      "createdAt": "2025-10-16T11:45:27.519Z",
+      "updatedAt": "2025-10-16T11:45:27.519Z",
+      "id": "eTCC1MPmHZOu7LAH",
+      "name": "corev4"
+    }
+  ]
+}

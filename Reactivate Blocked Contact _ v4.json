@@ -1,0 +1,505 @@
+{
+  "name": "Reactivate Blocked Contact | v4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a0e7cbdd-67c8-4b56-9ab4-36b34b5eca6c",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "prep-1",
+              "name": "contact_id",
+              "value": "={{ $json.contact_id }}",
+              "type": "number"
+            },
+            {
+              "id": "prep-2",
+              "name": "company_id",
+              "value": "={{ $json.company_id }}",
+              "type": "number"
+            },
+            {
+              "id": "prep-3",
+              "name": "whatsapp_id",
+              "value": "={{ $json.whatsapp_id}}",
+              "type": "string"
+            },
+            {
+              "id": "prep-4",
+              "name": "contact_name",
+              "value": "={{ $json.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-5",
+              "name": "evolution_api_url",
+              "value": "={{ $json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "prep-6",
+              "name": "evolution_Instance",
+              "value": "={{ $json.evolution_instance }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dd7aedf5-8486-4fc9-a75d-31c6a7ee0dfd",
+      "name": "Prepare: Reactivation Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "corev4_contacts",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.contact_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "opt_out",
+              "fieldValue": "={{ false }}"
+            }
+          ]
+        }
+      },
+      "id": "fbd6bf08-82ee-43a0-8933-2c879c5cd043",
+      "name": "Update: Reactivate Contact",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        96,
+        192
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "corev4_lead_state",
+        "limit": 1,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contact_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare Data').item.json.contact_id }}"
+            }
+          ]
+        }
+      },
+      "id": "3a104465-991a-45d6-ad02-921092e103cb",
+      "name": "Query: Lead State Existence",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        320,
+        192
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "exists",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3063d03d-48b5-4205-9655-9bc2a0266c63",
+      "name": "Check: Lead State Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "corev4_lead_state",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contact_id",
+              "keyValue": "={{ $('Prepare Data').item.json.contactId }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "active"
+            },
+            {
+              "fieldId": "qualification_stage",
+              "fieldValue": "discovery"
+            }
+          ]
+        }
+      },
+      "id": "8f4bbbad-b94a-47c4-a88e-8b5c6cf38e71",
+      "name": "Update: Reactivate Lead State",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        768,
+        96
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert"
+      },
+      "id": "1fabbdbb-4674-4f31-a31f-4e451ad9c0d8",
+      "name": "Insert: Lead State Record",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        768,
+        288
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "options": {}
+      },
+      "id": "d016e116-2d08-4130-820f-d6c341c57313",
+      "name": "Merge: Reactivation Paths",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        992,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-1",
+              "name": "welcomeMessage",
+              "value": "=Olá {{ $('Prepare Data').item.json.contactName }}! 👋\n\nQue bom ter você de volta! Estou aqui para ajudar.\n\nComo posso te auxiliar hoje?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "69832bec-a626-49a8-bc08-3e535f5dd4f1",
+      "name": "Prepare: Welcome Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Prepare Data').item.json.evolutionApiUrl }}/message/sendText/{{ $('Prepare Data').item.json.evolutionInstance }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "evolutionApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Prepare Data').item.json.whatsappId }}\",\n  \"text\": \"{{ $json.welcomeMessage }}\"\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "0298a51c-acc0-4f16-871a-7f7e1ed15a46",
+      "name": "Send Welcome Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert"
+      },
+      "id": "2f84b3f7-f8d4-42af-9202-42eb9f1edc35",
+      "name": "Insert: Welcome Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        192
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LCC4ysI1Fxd9iDGz",
+          "name": "Supabase Core"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "output-1",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "output-2",
+              "name": "contactId",
+              "value": "={{ $('Prepare Data').item.json.contactId }}",
+              "type": "number"
+            },
+            {
+              "id": "output-3",
+              "name": "status",
+              "value": "reactivated",
+              "type": "string"
+            },
+            {
+              "id": "output-4",
+              "name": "message",
+              "value": "Contact reactivated and welcome message sent",
+              "type": "string"
+            },
+            {
+              "id": "output-5",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a41cd951-cfee-4c91-a973-4a34c54381bc",
+      "name": "Format Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1888,
+        192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Reactivation Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Reactivation Data": {
+      "main": [
+        [
+          {
+            "node": "Update: Reactivate Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update: Reactivate Contact": {
+      "main": [
+        [
+          {
+            "node": "Query: Lead State Existence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query: Lead State Existence": {
+      "main": [
+        [
+          {
+            "node": "Check: Lead State Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Lead State Exists": {
+      "main": [
+        [
+          {
+            "node": "Update: Reactivate Lead State",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert: Lead State Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update: Reactivate Lead State": {
+      "main": [
+        [
+          {
+            "node": "Merge: Reactivation Paths",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: Lead State Record": {
+      "main": [
+        [
+          {
+            "node": "Merge: Reactivation Paths",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge: Reactivation Paths": {
+      "main": [
+        [
+          {
+            "node": "Prepare: Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare: Welcome Message": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Message": {
+      "main": [
+        [
+          {
+            "node": "Insert: Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert: Welcome Message": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "57094174-5240-4f37-96b0-e4c3482ff465",
+  "meta": {
+    "instanceId": "5c6394fedb685d155bbe72063becfd91d616d8e123397941c9863e7b805328ae"
+  },
+  "id": "DF0p6UjtkmqCOv2Y",
+  "tags": [
+    {
+      "createdAt": "2025-10-16T11:45:27.519Z",
+      "updatedAt": "2025-10-16T11:45:27.519Z",
+      "id": "eTCC1MPmHZOu7LAH",
+      "name": "corev4"
+    }
+  ]
+}

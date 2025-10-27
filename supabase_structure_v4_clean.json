@@ -1,0 +1,2086 @@
+{
+  "database": "corev4",
+  "total_tables": 19,
+  "tables": {
+    "corev4_ai_decisions": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_ai_decisions_id_seq'::regclass)"
+        },
+        {
+          "name": "followup_execution_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "model_used",
+          "type": "character varying",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "decision",
+          "type": "character varying",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "confidence_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "reasoning",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "context_snapshot",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "processing_time_ms",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "tokens_used",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "cost_usd",
+          "type": "numeric",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "followup_execution_id",
+          "references": "corev4_followup_executions.id",
+          "on_delete": "SET NULL",
+          "constraint": "fk_ai_decisions_followup_execution"
+        }
+      ]
+    },
+    "corev4_anum_history": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_anum_history_id_seq'::regclass)"
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "authority_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "need_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "urgency_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "money_score",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "total_score",
+          "type": "numeric",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "is_qualified",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
+        },
+        {
+          "name": "qualification_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "evidence",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "confidence_score",
+          "type": "numeric",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "messages_analyzed",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "analysis_reasoning",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "authority_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "need_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "urgency_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "money_delta",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "trigger_source",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'anum_analyzer'::character varying"
+        },
+        {
+          "name": "analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "CASCADE",
+          "constraint": "corev4_anum_history_company_id_fkey"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "corev4_anum_history_contact_id_fkey"
+        }
+      ]
+    },
+    "corev4_chat_history": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_chat_history_id_seq'::regclass)"
+        },
+        {
+          "name": "session_id",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "role",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "message",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "message_type",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "media_url",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "media_mime_type",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "tokens_used",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "cost_usd",
+          "type": "numeric",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "model_used",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "message_timestamp",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "has_media",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_chat_history_company"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "fk_chat_history_contact"
+        }
+      ]
+    },
+    "corev4_chats": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false,
+          "default": "nextval('corev4_chats_id_seq'::regclass)"
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "agent_alias",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "last_message_ts",
+          "type": "bigint",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "last_lead_message_ts",
+          "type": "bigint",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "last_agent_message_ts",
+          "type": "bigint",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "batch_collecting",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "batch_expires_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "conversation_open",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "closed_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "corev4_chats_contact_id_fkey"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_chats_company"
+        }
+      ]
+    },
+    "corev4_companies": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_companies_id_seq'::regclass)"
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "slug",
+          "type": "character varying",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "evolution_api_url",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "evolution_instance",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "evolution_api_key",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "enable_anum_analysis",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "anum_threshold_qualified",
+          "type": "integer",
+          "nullable": true,
+          "default": "70"
+        },
+        {
+          "name": "anum_threshold_disqualified",
+          "type": "integer",
+          "nullable": true,
+          "default": "20"
+        },
+        {
+          "name": "enable_followup_campaigns",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "auto_create_campaigns",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "default_followup_config_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "contact_type_mode",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'leads_only'::character varying"
+        },
+        {
+          "name": "enable_audio_responses",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "enable_media_processing",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "enable_command_processing",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "llm_model",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'gpt-4-turbo'::character varying"
+        },
+        {
+          "name": "llm_temperature",
+          "type": "numeric",
+          "nullable": true,
+          "default": "0.7"
+        },
+        {
+          "name": "llm_max_tokens",
+          "type": "integer",
+          "nullable": true,
+          "default": "1000"
+        },
+        {
+          "name": "bot_name",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'Frank'::character varying"
+        },
+        {
+          "name": "bot_personality",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "system_prompt",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "greeting_message",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "webhook_secret",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "webhook_validation_enabled",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "crm_integration",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "crm_api_key",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "crm_pipeline_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "features",
+          "type": "jsonb",
+          "nullable": true,
+          "default": "'{}'::jsonb"
+        },
+        {
+          "name": "plan_tier",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'free'::character varying"
+        },
+        {
+          "name": "monthly_message_limit",
+          "type": "integer",
+          "nullable": true,
+          "default": "1000"
+        },
+        {
+          "name": "current_month_messages",
+          "type": "integer",
+          "nullable": true,
+          "default": "0"
+        },
+        {
+          "name": "billing_email",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "suspended_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "trial_ends_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "default_followup_config_id",
+          "references": "corev4_followup_configs.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_companies_default_followup_config_id_fkey"
+        }
+      ]
+    },
+    "corev4_contact_extras": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false,
+          "default": "nextval('corev4_contact_extras_id_seq'::regclass)"
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "pipeline_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "crm_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "deals_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "thread_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "stripe_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "audio_response",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "text_response",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "interactions",
+          "type": "integer",
+          "nullable": true,
+          "default": "0"
+        },
+        {
+          "name": "last_interaction_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "plan_tier",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "evolution_api_contact",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "fk_contact_extras_contact"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "corev4_contact_extras_contact_id_fkey"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_contact_extras_company"
+        }
+      ]
+    },
+    "corev4_contacts": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false,
+          "default": "nextval('corev4_contacts_id_seq'::regclass)"
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "full_name",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "whatsapp",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "phone_number",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "origin_source",
+          "type": "text",
+          "nullable": false,
+          "default": "'whatsapp'::text"
+        },
+        {
+          "name": "utm_source",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "utm_medium",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "utm_campaign",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "utm_adgroup",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "utm_creative",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "sector",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "tags",
+          "type": "ARRAY",
+          "nullable": true,
+          "default": "'{}'::text[]"
+        },
+        {
+          "name": "opt_out",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "last_interaction_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_contacts_company"
+        }
+      ]
+    },
+    "corev4_execution_logs": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_execution_logs_id_seq'::regclass)"
+        },
+        {
+          "name": "workflow_name",
+          "type": "character varying",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "execution_id",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "followup_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "action_taken",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "success",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "error_message",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "details",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "duration_ms",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "SET NULL",
+          "constraint": "corev4_execution_logs_contact_id_fkey"
+        }
+      ]
+    },
+    "corev4_followup_campaigns": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_campaigns_id_seq1'::regclass)"
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "config_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'active'::character varying"
+        },
+        {
+          "name": "pause_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "steps_completed",
+          "type": "integer",
+          "nullable": true,
+          "default": "0"
+        },
+        {
+          "name": "total_steps",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "last_step_sent_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "should_continue",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "stopped_reason",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_campaigns_company_id_fkey1"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "fk_followup_campaigns_contact"
+        },
+        {
+          "column": "config_id",
+          "references": "corev4_followup_configs.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_followup_campaigns_config"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_followup_campaigns_company"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_campaigns_contact_id_fkey"
+        },
+        {
+          "column": "config_id",
+          "references": "corev4_followup_configs.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_campaigns_config_id_fkey"
+        }
+      ]
+    },
+    "corev4_followup_configs": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_configs_id_seq1'::regclass)"
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "config_name",
+          "type": "character varying",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "total_steps",
+          "type": "integer",
+          "nullable": false,
+          "default": "5"
+        },
+        {
+          "name": "qualification_threshold",
+          "type": "integer",
+          "nullable": true,
+          "default": "60"
+        },
+        {
+          "name": "disqualification_threshold",
+          "type": "integer",
+          "nullable": true,
+          "default": "15"
+        },
+        {
+          "name": "max_no_response_days",
+          "type": "integer",
+          "nullable": true,
+          "default": "30"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_configs_company_id_fkey"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_followup_configs_company"
+        }
+      ]
+    },
+    "corev4_followup_executions": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_executions_id_seq1'::regclass)"
+        },
+        {
+          "name": "campaign_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "step",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "total_steps",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "scheduled_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "executed",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "generated_message",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "generation_context",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "should_send",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "anum_at_execution",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "evolution_message_id",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "evolution_api_url",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "evolution_instance",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "campaign_id",
+          "references": "corev4_followup_campaigns.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_executions_campaign_id_fkey1"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_executions_contact_id_fkey1"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_followup_executions_company"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "fk_followup_executions_contact"
+        },
+        {
+          "column": "campaign_id",
+          "references": "corev4_followup_campaigns.id",
+          "on_delete": "CASCADE",
+          "constraint": "fk_followup_executions_campaign"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_executions_company_id_fkey"
+        }
+      ]
+    },
+    "corev4_followup_sequences": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_sequences_id_seq'::regclass)"
+        },
+        {
+          "name": "campaign_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "step_number",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "interval_hours",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "message_template",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "min_anum_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "max_anum_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "required_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": []
+    },
+    "corev4_followup_stage_history": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_stage_history_id_seq'::regclass)"
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "followup_execution_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "old_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "new_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "changed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "changed_by",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "corev4_followup_stage_history_contact_id_fkey"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_followup_stage_history_company_id_fkey"
+        }
+      ]
+    },
+    "corev4_followup_steps": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_followup_steps_id_seq'::regclass)"
+        },
+        {
+          "name": "config_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "step_number",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "wait_hours",
+          "type": "integer",
+          "nullable": false,
+          "default": "0"
+        },
+        {
+          "name": "wait_minutes",
+          "type": "integer",
+          "nullable": false,
+          "default": "0"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "config_id",
+          "references": "corev4_followup_configs.id",
+          "on_delete": "CASCADE",
+          "constraint": "corev4_followup_steps_config_id_fkey"
+        }
+      ]
+    },
+    "corev4_lead_state": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_lead_state_id_seq'::regclass)"
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "authority_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "need_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "urgency_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "money_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "total_score",
+          "type": "numeric",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "qualification_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "profile",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "main_pain",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "main_objection",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "prob_conversion",
+          "type": "numeric",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "next_objective",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "suggested_question",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "nullable": true,
+          "default": "'cold'::character varying"
+        },
+        {
+          "name": "last_analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "analysis_count",
+          "type": "integer",
+          "nullable": true,
+          "default": "0"
+        },
+        {
+          "name": "is_qualified",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "last_analysis_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "corev4_lead_state_contact_id_fkey"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_lead_state_company_id_fkey"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_lead_state_company"
+        },
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "CASCADE",
+          "constraint": "fk_lead_state_contact"
+        }
+      ]
+    },
+    "corev4_lead_state_backup": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "authority_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "need_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "urgency_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "money_score",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "total_score",
+          "type": "numeric",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "qualification_stage",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "profile",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "main_pain",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "main_objection",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "prob_conversion",
+          "type": "numeric",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "next_objective",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "suggested_question",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "last_analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "analysis_count",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "is_qualified",
+          "type": "boolean",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "analyzed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "last_analysis_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        }
+      ],
+      "foreign_keys": []
+    },
+    "corev4_message_dedup": {
+      "columns": [
+        {
+          "name": "message_id",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "whatsapp_id",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "received_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": "now()"
+        },
+        {
+          "name": "processed",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        },
+        {
+          "name": "workflow_execution_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "received_at_second",
+          "type": "bigint",
+          "nullable": true,
+          "default": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_message_dedup_company"
+        }
+      ]
+    },
+    "corev4_message_media": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_message_media_id_seq'::regclass)"
+        },
+        {
+          "name": "message_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "storage_provider",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "storage_path",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "storage_url",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "original_url",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "media_type",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "mime_type",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "file_size",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "width",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "height",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "thumbnail_path",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "embedding",
+          "type": "USER-DEFINED",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "ocr_text",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "transcription",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "ai_description",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "ai_tags",
+          "type": "ARRAY",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "company_id",
+          "type": "integer",
+          "nullable": false,
+          "default": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "message_id",
+          "references": "corev4_chat_history.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_message_media_message_id_fkey"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "RESTRICT",
+          "constraint": "fk_message_media_company"
+        },
+        {
+          "column": "message_id",
+          "references": "corev4_chat_history.id",
+          "on_delete": "CASCADE",
+          "constraint": "fk_message_media_message"
+        },
+        {
+          "column": "company_id",
+          "references": "corev4_companies.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_message_media_company_id_fkey"
+        }
+      ]
+    },
+    "corev4_n8n_chat_histories": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('corev4_n8n_chat_histories_id_seq'::regclass)"
+        },
+        {
+          "name": "session_id",
+          "type": "character varying",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "message",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "contact_id",
+          "type": "integer",
+          "nullable": true,
+          "default": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "contact_id",
+          "references": "corev4_contacts.id",
+          "on_delete": "NO ACTION",
+          "constraint": "corev4_n8n_chat_histories_contact_id_fkey"
+        }
+      ]
+    }
+  }
+}
